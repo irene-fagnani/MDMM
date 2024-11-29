@@ -246,6 +246,7 @@ class MD_multi(nn.Module):
     # update G, Ec
     self.enc_c_opt.zero_grad()
     self.gen_opt.zero_grad()
+    self.forward()
     self.backward_G_alone()
     self.enc_c_opt.step()
     self.gen_opt.step()
