@@ -120,7 +120,7 @@ class MD_G_uni(nn.Module):
     return self.dec(x_c)
 
 class MD_G_multi_concat(nn.Module):
-  def __init__(self, output_dim, c_dim=3, nz=8):
+  def __init__(self, output_dim,x_dim, z_dim, y_dim, c_dim=3, nz=8):
     super(MD_G_multi_concat, self).__init__()
     self.nz = nz
     self.c_dim = c_dim
@@ -144,8 +144,17 @@ class MD_G_multi_concat(nn.Module):
     self.dec2 = nn.Sequential(*dec2)
     self.dec3 = nn.Sequential(*dec3)
     self.dec4 = nn.Sequential(*dec4)
+    self.generative_net = GMVAE.GenerativeNet(x_dim, z_dim, y_dim)
 
-  def forward(self, x, z, c):
+  def sample_z(self, y):
+      # Ottieni i parametri della distribuzione di z condizionata su y usando GenerativeNet
+      y_mu, y_var = self.generative_net.pzy(y)
+      # Campiona z da una distribuzione normale con media y_mu e varianza y_var
+      z = y_mu + torch.sqrt(y_var) * torch.randn_like(y_var)
+      return z
+
+  def forward(self, x, y, c):
+    z=self.sample_z(y)
     out0 = self.dec_share(x)
     z_img = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), x.size(2), x.size(3))
     c = c.view(c.size(0), c.size(1), 1, 1)

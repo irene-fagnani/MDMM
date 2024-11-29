@@ -40,6 +40,12 @@ class TrainOptions():
     self.parser.add_argument('--isDcontent', action='store_true')
     self.parser.add_argument('--gpu', type=int, default=0, help='gpu')
 
+    #GMVAE parameters
+    self.parser.add_argument('--num_classes', type=int, default=2, help='number of classes (default: 2)')
+    self.parser.add_argument('--gaussian_size', default=64, type=int, help='gaussian size (default: 64) (z_dim)')
+    self.parser.add_argument('--x_dim', default=262144, type=int, help='input size (default: 2916) (2916=3*216*3*3)')
+
+
   def parse(self):
     self.opt = self.parser.parse_args()
     args = vars(self.opt)
@@ -73,6 +79,11 @@ class TestOptions():
     self.parser.add_argument('--gpu', type=int, default=0, help='gpu')
 
     self.parser.add_argument('--isDcontent', action='store_true')
+
+    #GMVAE parameters
+    self.parser.add_argument('--num_classes', type=int, default=2, help='number of classes (default: 2)')
+    self.parser.add_argument('--gaussian_size', default=64, type=int, help='gaussian size (default: 64) (z_dim)')
+    self.parser.add_argument('--x_dim', default=2916, type=int, help='input size (default: 2916) (2916=3*216*3*3)')
 
   def parse(self):
     self.opt = self.parser.parse_args()
