@@ -42,10 +42,10 @@ def main():
 
       # input data
       # NVIDIA
-      #images = images.cuda(opts.gpu).detach()
-      #c_org = c_org.cuda(opts.gpu).detach()
-      images = images.cpu().detach()
-      c_org = c_org.cpu().detach()
+      images = images.cuda(opts.gpu).detach()
+      c_org = c_org.cuda(opts.gpu).detach()
+      #images = images.cpu().detach()
+      #c_org = c_org.cpu().detach()
       #c_trg = c_trg.cuda(opts.gpu).detach()
       #input()
       

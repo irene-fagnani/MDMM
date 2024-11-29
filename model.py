@@ -68,28 +68,28 @@ class MD_multi(nn.Module):
   def setgpu(self, gpu):
     self.gpu = gpu
     # MODIFICHE NVIDIA
-    #self.dis1.cuda(self.gpu)
-    # self.dis2.cuda(self.gpu)
-    # self.enc_c.cuda(self.gpu)
-    # self.enc_a.cuda(self.gpu)
-    # self.gen.cuda(self.gpu)
-    # if self.isDcontent:
-    #   self.disContent.cuda(self.gpu)
-    self.dis1.cuda()
-    self.dis2.cuda()
+    self.dis1.cuda(self.gpu)
+    self.dis2.cuda(self.gpu)
+    self.enc_c.cuda(self.gpu)
+    self.enc_a.cuda(self.gpu)
+    self.gen.cuda(self.gpu)
+    if self.isDcontent:
+      self.disContent.cuda(self.gpu)
+    # self.dis1.cuda()
+    # self.dis2.cuda()
     #self.enc_c.cuda()
     #self.enc_a.cuda()
     #self.gen.cuda()
-    self.enc_c.cpu()
-    self.enc_a.cpu()
-    self.gen.cpu()
-    if self.isDcontent:
-      self.disContent.cpu()
+    # self.enc_c.cpu()
+    # self.enc_a.cpu()
+    # self.gen.cpu()
+    # if self.isDcontent:
+    #   self.disContent.cpu()
 
   def get_z_random(self, batchSize, nz, random_type='gauss'):
     # NVIDIA
-    #z = torch.randn(batchSize, nz).cuda(self.gpu)
-    z = torch.randn(batchSize, nz).cpu()
+    z = torch.randn(batchSize, nz).cuda(self.gpu)
+    #z = torch.randn(batchSize, nz).cpu()
     return z
 
   def test_forward_random(self, image):
@@ -220,10 +220,10 @@ class MD_multi(nn.Module):
       out_fake = nn.functional.sigmoid(out_a)
       out_real = nn.functional.sigmoid(out_b)
       # NVIDIA
-      # all0 = torch.zeros_like(out_fake).cuda(self.gpu)
-      # all1 = torch.ones_like(out_real).cuda(self.gpu)
-      all0 = torch.zeros_like(out_fake).cpu()
-      all1 = torch.ones_like(out_real).cpu()
+      all0 = torch.zeros_like(out_fake).cuda(self.gpu)
+      all1 = torch.ones_like(out_real).cuda(self.gpu)
+      #all0 = torch.zeros_like(out_fake).cpu()
+      #all1 = torch.ones_like(out_real).cpu()
       ad_fake_loss = nn.functional.binary_cross_entropy(out_fake, all0)
       ad_true_loss = nn.functional.binary_cross_entropy(out_real, all1)
       loss_D_gan += ad_true_loss + ad_fake_loss
@@ -262,8 +262,8 @@ class MD_multi(nn.Module):
     for out_a in pred_fake:
       outputs_fake = nn.functional.sigmoid(out_a)
       #NVIDIA
-      #all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
-      all_ones = torch.ones_like(outputs_fake).cpu()
+      all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
+      #all_ones = torch.ones_like(outputs_fake).cpu()
       loss_G_GAN += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
    
     # classification
@@ -312,8 +312,8 @@ class MD_multi(nn.Module):
     for out_a in pred_fake:
       outputs_fake = nn.functional.sigmoid(out_a)
       #NVIDIA
-      # all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
-      all_ones = torch.ones_like(outputs_fake).cpu()
+      all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
+      #all_ones = torch.ones_like(outputs_fake).cpu()
       loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
 
     # classification
