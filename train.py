@@ -1,7 +1,7 @@
 import torch
 from options import TrainOptions
 from datasets import dataset_multi
-from model import MD_uni, MD_multi
+from model import MD_multi
 from saver import Saver
 
 def main():
@@ -17,6 +17,7 @@ def main():
   # model
   print('\n--- load model ---')
   model = MD_multi(opts)
+  # NVIDIA
   model.setgpu(opts.gpu)
   if opts.resume is None:
     model.initialize()

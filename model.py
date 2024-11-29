@@ -66,13 +66,24 @@ class MD_multi(nn.Module):
 
   def setgpu(self, gpu):
     self.gpu = gpu
-    self.dis1.cuda(self.gpu)
-    self.dis2.cuda(self.gpu)
-    self.enc_c.cuda(self.gpu)
-    self.enc_a.cuda(self.gpu)
-    self.gen.cuda(self.gpu)
+    # MODIFICHE NVIDIA
+    #self.dis1.cuda(self.gpu)
+    # self.dis2.cuda(self.gpu)
+    # self.enc_c.cuda(self.gpu)
+    # self.enc_a.cuda(self.gpu)
+    # self.gen.cuda(self.gpu)
+    # if self.isDcontent:
+    #   self.disContent.cuda(self.gpu)
+    self.dis1.cuda()
+    self.dis2.cuda()
+    #self.enc_c.cuda()
+    #self.enc_a.cuda()
+    #self.gen.cuda()
+    self.enc_c.cpu()
+    self.enc_a.cpu()
+    self.gen.cpu()
     if self.isDcontent:
-      self.disContent.cuda(self.gpu)
+      self.disContent.cpu()
 
   def get_z_random(self, batchSize, nz, random_type='gauss'):
     z = torch.randn(batchSize, nz).cuda(self.gpu)

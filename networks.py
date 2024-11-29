@@ -1,5 +1,5 @@
 import numpy as np
-
+import GMVAE
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
@@ -224,11 +224,18 @@ class MD_Dis(nn.Module):
     #model += [LeakyReLUConv2d(tch, tch * 2, kernel_size=3, stride=2, padding=1, norm='None', sn=sn)] # 2
     #tch *= 2
     return nn.Sequential(*model), tch
-
-  def cuda(self,gpu):
-    self.model.cuda(gpu)
-    self.conv1.cuda(gpu)
-    self.conv2.cuda(gpu)
+  
+  # MODIFICHE NVIDIA
+  #def cuda(self,gpu):
+  def cuda(self):
+    # MODIFICHE NVIDIA
+    self.model.cpu()
+    self.conv1.cpu()
+    self.conv2.cpu()
+    # self.model.cuda(gpu)
+    # self.conv1.cuda(gpu)
+    # self.conv2.cuda(gpu)
+    
 
   def forward(self, x):
     h = self.model(x)

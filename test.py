@@ -22,7 +22,9 @@ def main():
   # model
   print('\n--- load model ---')
   model = MD_multi(opts)
-  model.setgpu(opts.gpu)
+  # NVIDIA
+  #model.setgpu(opts.gpu)
+  model
   model.resume(opts.resume, train=False)
   model.eval()
 
