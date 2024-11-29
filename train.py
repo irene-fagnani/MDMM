@@ -34,15 +34,18 @@ def main():
 
   # train
   print('\n--- train ---')
-  max_it = 500000
+  max_it = 100
   for ep in range(ep0, opts.n_ep):
     for it, (images, c_org) in enumerate(train_loader):
       if images.size(0) != opts.batch_size:
         continue
 
       # input data
-      images = images.cuda(opts.gpu).detach()
-      c_org = c_org.cuda(opts.gpu).detach()
+      # NVIDIA
+      #images = images.cuda(opts.gpu).detach()
+      #c_org = c_org.cuda(opts.gpu).detach()
+      images = images.cpu().detach()
+      c_org = c_org.cpu().detach()
       #c_trg = c_trg.cuda(opts.gpu).detach()
       #input()
       

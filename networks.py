@@ -456,7 +456,10 @@ class GaussianNoiseLayer(nn.Module):
   def forward(self, x):
     if self.training == False:
       return x
-    noise = Variable(torch.randn(x.size()).cuda(x.get_device()))
+    # MODIFICA NVIDIA
+    #noise = Variable(torch.randn(x.size()).cuda(x.get_device()))
+    device =x.get_device() if x.is_cuda else 'cpu' # commentra se si usa CUDA
+    noise = Variable(torch.randn(x.size()).to(device)) # commentra se si usa CUDA
     return x + noise
 
 class ReLUINSConvTranspose2d(nn.Module):

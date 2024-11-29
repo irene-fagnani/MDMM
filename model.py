@@ -2,6 +2,7 @@ import networks
 import torch
 import torch.nn as nn
 import numpy as np
+torch.autograd.set_detect_anomaly(True)
 
 
 class MD_multi(nn.Module):
@@ -86,7 +87,9 @@ class MD_multi(nn.Module):
       self.disContent.cpu()
 
   def get_z_random(self, batchSize, nz, random_type='gauss'):
-    z = torch.randn(batchSize, nz).cuda(self.gpu)
+    # NVIDIA
+    #z = torch.randn(batchSize, nz).cuda(self.gpu)
+    z = torch.randn(batchSize, nz).cpu()
     return z
 
   def test_forward_random(self, image):
@@ -216,8 +219,11 @@ class MD_multi(nn.Module):
     for it, (out_a, out_b) in enumerate(zip(pred_fake, pred_real)):
       out_fake = nn.functional.sigmoid(out_a)
       out_real = nn.functional.sigmoid(out_b)
-      all0 = torch.zeros_like(out_fake).cuda(self.gpu)
-      all1 = torch.ones_like(out_real).cuda(self.gpu)
+      # NVIDIA
+      # all0 = torch.zeros_like(out_fake).cuda(self.gpu)
+      # all1 = torch.ones_like(out_real).cuda(self.gpu)
+      all0 = torch.zeros_like(out_fake).cpu()
+      all1 = torch.ones_like(out_real).cpu()
       ad_fake_loss = nn.functional.binary_cross_entropy(out_fake, all0)
       ad_true_loss = nn.functional.binary_cross_entropy(out_real, all1)
       loss_D_gan += ad_true_loss + ad_fake_loss
@@ -254,7 +260,9 @@ class MD_multi(nn.Module):
     loss_G_GAN = 0
     for out_a in pred_fake:
       outputs_fake = nn.functional.sigmoid(out_a)
-      all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
+      #NVIDIA
+      #all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
+      all_ones = torch.ones_like(outputs_fake).cpu()
       loss_G_GAN += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
    
     # classification
@@ -302,7 +310,9 @@ class MD_multi(nn.Module):
     loss_G_GAN2 = 0
     for out_a in pred_fake:
       outputs_fake = nn.functional.sigmoid(out_a)
-      all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
+      #NVIDIA
+      # all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
+      all_ones = torch.ones_like(outputs_fake).cpu()
       loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
 
     # classification
