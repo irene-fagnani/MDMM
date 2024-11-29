@@ -62,7 +62,7 @@ class MD_E_attr(nn.Module):
     return output.view(output.size(0), -1)
 
 class MD_E_attr_concat(nn.Module):
-  def __init__(self, input_dim, output_nc=8, c_dim=3, norm_layer=None, nl_layer=None):
+  def __init__(self, input_dim,z_dim,y_dim, output_nc=8, c_dim=3, norm_layer=None, nl_layer=None):
     super(MD_E_attr_concat, self).__init__()
 
     ndf = 64
@@ -79,8 +79,9 @@ class MD_E_attr_concat(nn.Module):
     self.fc = nn.Sequential(*[nn.Linear(output_ndf, output_nc)])
     self.fcVar = nn.Sequential(*[nn.Linear(output_ndf, output_nc)])
     self.conv = nn.Sequential(*conv_layers)
+    self.inference_net = GMVAE.InferenceNet(x_dim=output_nc, z_dim=z_dim, y_dim=y_dim)
 
-  def forward(self, x, c):
+  def forward(self, x, c,temperature,hard):
     c = c.view(c.size(0), c.size(1), 1, 1)
     c = c.repeat(1, 1, x.size(2), x.size(3))
     x_c = torch.cat([x, c], dim=1)
@@ -88,7 +89,9 @@ class MD_E_attr_concat(nn.Module):
     conv_flat = x_conv.view(x.size(0), -1)
     output = self.fc(conv_flat)
     outputVar = self.fcVar(conv_flat)
-    return output, outputVar
+    inference_output = self.inference_net(output, temperature, hard)
+    inference_outputVar = self.inference_net(outputVar, temperature, hard)
+    return inference_output, inference_outputVar
 
 class MD_G_uni(nn.Module):
   def __init__(self, output_dim, c_dim=3):
