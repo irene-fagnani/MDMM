@@ -81,7 +81,7 @@ class MD_E_attr_concat(nn.Module):
     self.conv = nn.Sequential(*conv_layers)
     self.inference_net = GMVAE.InferenceNet(x_dim=output_nc, z_dim=z_dim, y_dim=y_dim)
 
-  def forward(self, x, c,temperature,hard):
+  def forward(self, x, c,temperature=1.0, hard=0):
     c = c.view(c.size(0), c.size(1), 1, 1)
     c = c.repeat(1, 1, x.size(2), x.size(3))
     x_c = torch.cat([x, c], dim=1)
@@ -160,6 +160,7 @@ class MD_G_multi_concat(nn.Module):
     c = c.view(c.size(0), c.size(1), 1, 1)
     c = c.repeat(1, 1, out0.size(2), out0.size(3))
     x_c_z = torch.cat([out0, c, z_img], 1)
+    print("size xcz",x_c_z.size())
     out1 = self.dec1(x_c_z)
     z_img2 = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), out1.size(2), out1.size(3))
     x_and_z2 = torch.cat([out1, z_img2], 1)

@@ -11,7 +11,7 @@ class MD_multi(nn.Module):
     self.opts = opts
     lr = 0.0001
     lr_dcontent = lr/2.5 
-    self.nz = 8
+    self.nz =64#8
 
     self.isDcontent = opts.isDcontent
     if opts.concat == 1:
@@ -23,9 +23,9 @@ class MD_multi(nn.Module):
     self.dis2 = networks.MD_Dis(opts.input_dim, norm=opts.dis_norm, sn=opts.dis_spectral_norm, c_dim=opts.num_domains, image_size=opts.crop_size)
     self.enc_c = networks.MD_E_content(opts.input_dim)
     if self.concat:
-      self.enc_a = networks.MD_E_attr_concat(opts.input_dim, output_nc=self.nz, c_dim=opts.num_domains, \
+      self.enc_a = networks.MD_E_attr_concat(opts.input_dim,opts.gaussian_size,opts.num_classes, output_nc=self.nz, c_dim=opts.num_domains, \
           norm_layer=None, nl_layer=networks.get_non_linearity(layer_type='lrelu'))
-      self.gen = networks.MD_G_multi_concat(opts.input_dim, c_dim=opts.num_domains, nz=self.nz)
+      self.gen = networks.MD_G_multi_concat(opts.input_dim,opts.x_dim,opts.gaussian_size,opts.num_classes, c_dim=opts.num_domains, nz=self.nz)
     else:
       self.enc_a = networks.MD_E_attr(opts.input_dim, output_nc=self.nz, c_dim=opts.num_domains)
       self.gen = networks.MD_G_multi(opts.input_dim, nz=self.nz, c_dim=opts.num_domains)
@@ -104,9 +104,12 @@ class MD_multi(nn.Module):
       outputs.append(output)
     return outputs
 
-  def test_forward_transfer(self, image, image_trg, c_trg):
+  def test_forward_transfer(self, image, image_trg, c_trg,temperature=1.0,hard=0):
     self.z_content = self.enc_c.forward(image)
-    self.mu, self.logvar = self.enc_a.forward(self.image_trg, self.c_trg)
+    inf, infvar = self.enc_a.forward(self.image_trg, self.c_trg,temperature,hard)
+    self.mu=inf["mean"]
+    self.logvar=infvar['var'].log()
+    print("log",self.logvar)
     std = self.logvar.mul(0.5).exp_()
     eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
     self.z_attr = eps.mul(std).add_(self.mu)
@@ -131,7 +134,10 @@ class MD_multi(nn.Module):
 
     # get encoded z_a
     if self.concat:
-      self.mu, self.logvar = self.enc_a.forward(self.real_img, self.c_org)
+      inf, infvar = self.enc_a.forward(self.real_img, self.c_org)
+      self.mu=inf["mean"]
+      self.logvar=infvar['var'].log()
+      print("log",self.logvar)
       std = self.logvar.mul(0.5).exp_()
       eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
       self.z_attr = eps.mul(std).add_(self.mu)
@@ -144,6 +150,8 @@ class MD_multi(nn.Module):
     # first cross translation
     input_content_forA = torch.cat((self.z_content_b, self.z_content_a, self.z_content_b),0)
     input_content_forB = torch.cat((self.z_content_a, self.z_content_b, self.z_content_a),0)
+    print("z_attra",self.z_attr_a.size())
+    print("z_random",self.z_random.size())
     input_attr_forA = torch.cat((self.z_attr_a, self.z_attr_a, self.z_random),0)
     input_attr_forB = torch.cat((self.z_attr_b, self.z_attr_b, self.z_random),0)
     input_c_forA = torch.cat((c_org_A, c_org_A, c_org_A), 0)
