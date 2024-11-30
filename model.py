@@ -130,17 +130,20 @@ class MD_multi(nn.Module):
     # get encoded z_c
     self.real_img = torch.cat((self.real_A, self.real_B),0)
     self.z_content = self.enc_c.forward(self.real_img)
+    print("z",self.z_content.size())
     self.z_content_a, self.z_content_b = torch.split(self.z_content, half_size, dim=0)
 
     # get encoded z_a
     if self.concat:
       inf, infvar = self.enc_a.forward(self.real_img, self.c_org)
+      print("inf",inf)
       self.mu=inf["mean"]
       self.logvar=infvar['var'].log()
-      print("log",self.logvar)
+      print("log",self.logvar.size())
       std = self.logvar.mul(0.5).exp_()
       eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
-      self.z_attr = eps.mul(std).add_(self.mu)
+      #self.z_attr = eps.mul(std).add_(self.mu)
+      self.z_attr=inf["gaussian"]
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
     self.z_attr_a, self.z_attr_b = torch.split(self.z_attr, half_size, dim=0)
@@ -156,6 +159,9 @@ class MD_multi(nn.Module):
     input_attr_forB = torch.cat((self.z_attr_b, self.z_attr_b, self.z_random),0)
     input_c_forA = torch.cat((c_org_A, c_org_A, c_org_A), 0)
     input_c_forB = torch.cat((c_org_B, c_org_B, c_org_B), 0)
+    print("content",input_content_forA.size())
+    print("attr",input_attr_forA.size())
+    print("c",input_c_forA.size())
     output_fakeA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA)
     output_fakeB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB)
     self.fake_A_encoded, self.fake_AA_encoded, self.fake_A_random = torch.split(output_fakeA, self.z_content_a.size(0), dim=0)
@@ -168,10 +174,13 @@ class MD_multi(nn.Module):
 
     # get reconstructed encoded z_a
     if self.concat:
-      self.mu_recon, self.logvar_recon = self.enc_a.forward(self.fake_encoded_img, self.c_org)
+      inf, infvar = self.enc_a.forward(self.fake_encoded_img, self.c_org)
+      self.mu_recon=inf["mean"]
+      self.logvar_recon=infvar['var'].log()
       std_recon = self.logvar_recon.mul(0.5).exp_()
       eps_recon = self.get_z_random(std_recon.size(0), std_recon.size(1), 'gauss')
-      self.z_attr_recon = eps_recon.mul(std_recon).add_(self.mu_recon)
+      #self.z_attr_recon = eps_recon.mul(std_recon).add_(self.mu_recon)
+      self.z_attr_recon=inf["gaussian"]
     else:
       self.z_attr_recon = self.enc_a.forward(self.fake_encoded_img, self.c_org)
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
@@ -189,7 +198,8 @@ class MD_multi(nn.Module):
     # for latent regression
     self.fake_random_img = torch.cat((self.fake_A_random, self.fake_B_random), 0)
     if self.concat:
-      self.mu2, _= self.enc_a.forward(self.fake_random_img, self.c_org)
+      inf, _= self.enc_a.forward(self.fake_random_img, self.c_org)
+      self.mu2=inf['mean']
       self.mu2_a, self.mu2_b = torch.split(self.mu2, half_size, 0)
     else:
       self.z_attr_random = self.enc_a.forward(self.fake_random_img, self.c_org)

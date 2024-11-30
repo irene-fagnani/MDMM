@@ -153,8 +153,9 @@ class MD_G_multi_concat(nn.Module):
       z = y_mu + torch.sqrt(y_var) * torch.randn_like(y_var)
       return z
 
-  def forward(self, x, y, c):
-    z=self.sample_z(y)
+  def forward(self, x, y, c): #content,attr,c
+    #z=self.sample_z(y)
+    z=y
     out0 = self.dec_share(x)
     z_img = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), x.size(2), x.size(3))
     c = c.view(c.size(0), c.size(1), 1, 1)
