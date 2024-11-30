@@ -38,15 +38,15 @@ def main():
   for ep in range(ep0, opts.n_ep):
     for it, (images, c_org) in enumerate(train_loader):
       if images.size(0) != opts.batch_size:
-        print("in if")
+        #print("in if")
         continue
 
       # input data
       # NVIDIA
       images = images.cuda(opts.gpu).detach()
       c_org = c_org.cuda(opts.gpu).detach()
-      print("c",c_org)
-      print("i",images.size())
+      #print("c",c_org)
+      #print("i",images.size())
       #images = images.cpu().detach()
       #c_org = c_org.cpu().detach()
       #c_trg = c_trg.cuda(opts.gpu).detach()
