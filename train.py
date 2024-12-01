@@ -34,7 +34,7 @@ def main():
 
   # train
   print('\n--- train ---')
-  max_it = 100
+  max_it = 10000
   for ep in range(ep0, opts.n_ep):
     for it, (images, c_org) in enumerate(train_loader):
       if images.size(0) != opts.batch_size:
