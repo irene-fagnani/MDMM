@@ -166,6 +166,7 @@ class MD_multi(nn.Module):
     infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB)
     output_fakeA=infA['x_rec']
     output_fakeB=infB['x_rec']
+    print("dim",output_fakeA.size())
     self.fake_A_encoded, self.fake_AA_encoded, self.fake_A_random = torch.split(output_fakeA, self.z_content_a.size(0), dim=0)
     self.fake_B_encoded, self.fake_BB_encoded, self.fake_B_random = torch.split(output_fakeB, self.z_content_a.size(0), dim=0)
 
@@ -188,8 +189,10 @@ class MD_multi(nn.Module):
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
 
     # second cross translation
-    self.fake_A_recon = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A)
-    self.fake_B_recon = self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B)
+    infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A)
+    self.fake_A_recon=infA['x_rec']
+    infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B)
+    self.fake_B_recon =infB['x_rec']
 
     # for display
     self.image_display = torch.cat((self.real_A[0:1].detach().cpu(), self.fake_B_encoded[0:1].detach().cpu(), \
