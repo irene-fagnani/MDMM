@@ -162,8 +162,10 @@ class MD_multi(nn.Module):
     #print("content",input_content_forA.size())
     #print("attr",input_attr_forA.size())
     #print("c",input_c_forA.size())
-    output_fakeA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA)
-    output_fakeB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB)
+    infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA)
+    infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB)
+    output_fakeA=infA['x_rec']
+    output_fakeB=infB['x_rec']
     self.fake_A_encoded, self.fake_AA_encoded, self.fake_A_random = torch.split(output_fakeA, self.z_content_a.size(0), dim=0)
     self.fake_B_encoded, self.fake_BB_encoded, self.fake_B_random = torch.split(output_fakeB, self.z_content_a.size(0), dim=0)
 
