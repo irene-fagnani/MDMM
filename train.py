@@ -34,10 +34,10 @@ def main():
 
   # train
   print('\n--- train ---')
-  max_it = 10000
+  max_it = 1000
   for ep in range(ep0, opts.n_ep):
     for it, (images, c_org) in enumerate(train_loader):
-      print("x_dim",images.size())
+      #print("x_dim",images.size())
       if images.size(0) != opts.batch_size:
         #print("in if")
         continue
