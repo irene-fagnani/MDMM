@@ -25,7 +25,7 @@ class MD_multi(nn.Module):
     if self.concat:
       self.enc_a = networks.MD_E_attr_concat(opts.input_dim,opts.gaussian_size,opts.num_classes, output_nc=self.nz, c_dim=opts.num_domains, \
           norm_layer=None, nl_layer=networks.get_non_linearity(layer_type='lrelu'))
-      self.gen = networks.MD_G_multi_concat(opts.input_dim,opts.x_dim,opts.gaussian_size,opts.num_classes, c_dim=opts.num_domains, nz=self.nz)
+      self.gen = networks.MD_G_multi_concat(opts.input_dim,opts.x_dim,opts.gaussian_size,opts.crop_size, c_dim=opts.num_domains, nz=self.nz)
     else:
       self.enc_a = networks.MD_E_attr(opts.input_dim, output_nc=self.nz, c_dim=opts.num_domains)
       self.gen = networks.MD_G_multi(opts.input_dim, nz=self.nz, c_dim=opts.num_domains)

@@ -169,7 +169,7 @@ class GenerativeNet(nn.Module):
         nn.ReLU(),
         nn.Linear(512, 512),
         nn.ReLU(),
-        nn.Linear(512, 216),
+        nn.Linear(512, x_dim),
         torch.nn.Sigmoid() # garantisce che l'output sia compreso tra 0 e 1
     ])
 
