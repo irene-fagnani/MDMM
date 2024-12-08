@@ -34,7 +34,7 @@ def main():
 
   # train
   print('\n--- train ---')
-  max_it = 1000
+  max_it = 50000 # 50000
   for ep in range(ep0, opts.n_ep):
     for it, (images, c_org) in enumerate(train_loader):
       #print("x_dim",images.size())
