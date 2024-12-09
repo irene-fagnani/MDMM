@@ -144,7 +144,7 @@ class MD_multi(nn.Module):
       eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
       #self.z_attr = eps.mul(std).add_(self.mu)
       self.z_attr=inf["gaussian"]
-      y=inf["y"]
+      y=inf["categorical"]
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
     self.z_attr_a, self.z_attr_b = torch.split(self.z_attr, half_size, dim=0)
@@ -163,6 +163,7 @@ class MD_multi(nn.Module):
     #print("content",input_content_forA.size())
     #print("attr",input_attr_forA.size())
     #print("c",input_c_forA.size())
+    print("y",y.size())
     infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA,y)
     infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,y)
     output_fakeA=infA['x_rec']
@@ -185,7 +186,7 @@ class MD_multi(nn.Module):
       eps_recon = self.get_z_random(std_recon.size(0), std_recon.size(1), 'gauss')
       #self.z_attr_recon = eps_recon.mul(std_recon).add_(self.mu_recon)
       self.z_attr_recon=inf["gaussian"]
-      y=inf["y"]
+      y=inf["categorical"]
     else:
       self.z_attr_recon = self.enc_a.forward(self.fake_encoded_img, self.c_org)
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
