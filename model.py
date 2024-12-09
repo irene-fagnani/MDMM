@@ -185,14 +185,15 @@ class MD_multi(nn.Module):
       eps_recon = self.get_z_random(std_recon.size(0), std_recon.size(1), 'gauss')
       #self.z_attr_recon = eps_recon.mul(std_recon).add_(self.mu_recon)
       self.z_attr_recon=inf["gaussian"]
+      y=inf["y"]
     else:
       self.z_attr_recon = self.enc_a.forward(self.fake_encoded_img, self.c_org)
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
 
     # second cross translation
-    infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A)
+    infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A,y)
     self.fake_A_recon=infA['x_rec']
-    infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B)
+    infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B,y)
     self.fake_B_recon =infB['x_rec']
 
     # for display
