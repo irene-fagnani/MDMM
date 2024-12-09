@@ -256,6 +256,7 @@ class MD_multi(nn.Module):
 
     loss_D_cls = self.cls_loss(pred_real_cls, self.c_org)
     loss_D = loss_D_gan + self.opts.lambda_cls * loss_D_cls 
+    self.loss_D = loss_D.item()
     loss_D.backward()
     return loss_D_gan, loss_D_cls
 
@@ -324,7 +325,7 @@ class MD_multi(nn.Module):
     self.kl_loss_za = loss_kl_za.item()
     self.l1_self_rec_loss = loss_G_L1_self.item()
     self.l1_cc_rec_loss = loss_G_L1_cc.item()
-    self.G_loss = loss_G.item()
+    self.loss_G = loss_G.item()
 
   def backward_G_GAN_content(self, data):
     pred_cls = self.disContent.forward(data)
