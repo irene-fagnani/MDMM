@@ -467,7 +467,7 @@ class MD_multi(nn.Module):
       # flatten data
       data = data.view(data.size(0), -1)
       # forward call
-      out_net = self.network(data, self.gumbel_temp, self.hard_gumbel)
+      out_net = self.network(data, self.gumbel_temp, self.opts.hard_gumbel)
       unlab_loss_dic = self.unlabeled_loss(data, out_net)
       total = unlab_loss_dic['total']
       # accumulate values
