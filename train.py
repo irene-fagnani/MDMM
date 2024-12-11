@@ -106,20 +106,19 @@ def main():
 
     # Save network weights
     saver.write_model(ep, total_it, model)
-    
-  import matplotlib.pyplot as plt
+  
 
   # Plot each loss
-  for key, value in losses.items():
-      plt.figure(figsize=(10, 5))
-      plt.plot(value, label=key)
-      plt.title(f"Loss Curve: {key}")
-      plt.xlabel("Iteration")
-      plt.ylabel("Loss")
-      plt.legend()
-      plt.grid()
-      plt.show()
-      plt.savefig(f"loss_{key}.png")
+  # for key, value in losses.items():
+  #     plt.figure(figsize=(10, 5))
+  #     plt.plot(value, label=key)
+  #     plt.title(f"Loss Curve: {key}")
+  #     plt.xlabel("Iteration")
+  #     plt.ylabel("Loss")
+  #     plt.legend()
+  #     plt.grid()
+  #     plt.show()
+  #     plt.savefig(f"loss_{key}.png")
 
   return
 

@@ -511,11 +511,11 @@ class MD_multi(nn.Module):
     y_mu, y_var = out_net['y_mean'], out_net['y_var']
     mu, var = out_net['mean'], out_net['var']
     # reconstruction loss
-    loss_rec = GMVAE.losses.reconstruction_loss(data, data_recon, self.opts.rec_type)
+    loss_rec = GMVAE.LossFunctions.reconstruction_loss(data, data_recon, self.opts.rec_type)
     # gaussian loss
-    loss_gauss = GMVAE.losses.gaussian_loss(z, mu, var, y_mu, y_var)
+    loss_gauss = GMVAE.LossFunctions.gaussian_loss(z, mu, var, y_mu, y_var)
     # categorical loss
-    loss_cat = -GMVAE.losses.entropy(logits, prob_cat) - np.log(0.1)
+    loss_cat = -GMVAE.LossFunctions.entropy(logits, prob_cat) - np.log(0.1)
     # total loss
     loss_total = self.opts.w_rec * loss_rec + self.opts.w_gauss * loss_gauss + self.opts.w_cat * loss_cat
     # obtain predictions
