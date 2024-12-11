@@ -94,6 +94,8 @@ def main():
         saver.write_img(-1, model)
         saver.write_model(-1, total_it, model)
         break
+      
+    print("train_loader shape: ",train_loader.shape())
     train_loss, train_rec, train_gauss, train_cat, train_acc, train_nmi = model.train_epoch_GMVAE(optimizer, train_loader)
     if ep>=1:
       model.gumbel_temp = np.maximum(opts.init_temp * np.exp(-opts.decay_temp_rate * ep), opts.min_temp)
