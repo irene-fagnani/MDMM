@@ -1,8 +1,11 @@
 import torch
+import losses
 from options import TrainOptions
 from datasets import dataset_multi
 from model import MD_multi
+from torch import nn, optim
 from saver import Saver
+import numpy as np
 
 def main():
   # parse options
@@ -40,6 +43,9 @@ def main():
   # train
   print('\n--- train ---')
   max_it = 1000 # 50000
+  model.network=losses.GMVAEnet(opts.x_dim, opts.gaussian_size, opts.num_classes)
+  optimizer = optim.Adam(model.network.parameters(), lr=0.0001)
+  model.gumbel_temp = opts.init_temp
   for ep in range(ep0, opts.n_ep):
     for it, (images, c_org) in enumerate(train_loader):
       #print("x_dim",images.size())
@@ -89,7 +95,9 @@ def main():
         saver.write_img(-1, model)
         saver.write_model(-1, total_it, model)
         break
-      
+    train_loss, train_rec, train_gauss, train_cat, train_acc, train_nmi = model.train_epoch_GMVAE(optimizer, train_loader)
+    if ep>=1:
+      model.gumbel_temp = np.maximum(opts.init_temp * np.exp(-opts.decay_temp_rate * ep), opts.min_temp)
     # decay learning rate
     if opts.n_ep_decay > -1:
       model.update_lr()
@@ -100,7 +108,7 @@ def main():
     # Save network weights
     saver.write_model(ep, total_it, model)
     
-    import matplotlib.pyplot as plt
+  import matplotlib.pyplot as plt
 
   # Plot each loss
   for key, value in losses.items():

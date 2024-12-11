@@ -44,6 +44,28 @@ class TrainOptions():
     self.parser.add_argument('--num_classes', type=int, default=2, help='number of classes (default: 2)')
     self.parser.add_argument('--gaussian_size', default=64, type=int, help='gaussian size (default: 64) (z_dim)')
     self.parser.add_argument('--x_dim', default=139968, type=int, help='input size (default: 2916) (2916=3*216*3*3)')
+    
+    ## Gumbel parameters
+    self.parser.add_argument('--init_temp', default=1.0, type=float,
+                        help='Initial temperature used in gumbel-softmax (recommended 0.5-1.0, default:1.0)')
+    self.parser.add_argument('--decay_temp', default=1, type=int,
+                        help='Set 1 to decay gumbel temperature at every epoch (default: 1)')
+    self.parser.add_argument('--hard_gumbel', default=0, type=int,
+                        help='Set 1 to use the hard version of gumbel-softmax (default: 1)')
+    self.parser.add_argument('--min_temp', default=0.5, type=float,
+                        help='Minimum temperature of gumbel-softmax after annealing (default: 0.5)' )
+    self.parser.add_argument('--decay_temp_rate', default=0.013862944, type=float,
+                        help='Temperature decay rate at every epoch (default: 0.013862944)')
+    
+    ## Loss function parameters
+    self.parser.add_argument('--w_gauss', default=1, type=float,
+                        help='weight of gaussian loss (default: 1)')
+    self.parser.add_argument('--w_categ', default=1, type=float,
+                        help='weight of categorical loss (default: 1)')
+    self.parser.add_argument('--w_rec', default=1, type=float,
+                        help='weight of reconstruction loss (default: 1)')
+    self.parser.add_argument('--rec_type', type=str, choices=['bce', 'mse'],
+                        default='bce', help='desired reconstruction loss function (default: bce)')
 
 
   def parse(self):
@@ -84,6 +106,28 @@ class TestOptions():
     self.parser.add_argument('--num_classes', type=int, default=2, help='number of classes (default: 2)')
     self.parser.add_argument('--gaussian_size', default=64, type=int, help='gaussian size (default: 64) (z_dim)')
     self.parser.add_argument('--x_dim', default=2916, type=int, help='input size (default: 2916) (2916=3*216*3*3)')
+    
+    ## Gumbel parameters
+    self.parser.add_argument('--init_temp', default=1.0, type=float,
+                        help='Initial temperature used in gumbel-softmax (recommended 0.5-1.0, default:1.0)')
+    self.parser.add_argument('--decay_temp', default=1, type=int,
+                        help='Set 1 to decay gumbel temperature at every epoch (default: 1)')
+    self.parser.add_argument('--hard_gumbel', default=0, type=int,
+                        help='Set 1 to use the hard version of gumbel-softmax (default: 1)')
+    self.parser.add_argument('--min_temp', default=0.5, type=float,
+                        help='Minimum temperature of gumbel-softmax after annealing (default: 0.5)' )
+    self.parser.add_argument('--decay_temp_rate', default=0.013862944, type=float,
+                        help='Temperature decay rate at every epoch (default: 0.013862944)')
+    
+    ## Loss function parameters
+    self.parser.add_argument('--w_gauss', default=1, type=float,
+                        help='weight of gaussian loss (default: 1)')
+    self.parser.add_argument('--w_categ', default=1, type=float,
+                        help='weight of categorical loss (default: 1)')
+    self.parser.add_argument('--w_rec', default=1, type=float,
+                        help='weight of reconstruction loss (default: 1)')
+    self.parser.add_argument('--rec_type', type=str, choices=['bce', 'mse'],
+                        default='bce', help='desired reconstruction loss function (default: bce)')
 
   def parse(self):
     self.opt = self.parser.parse_args()

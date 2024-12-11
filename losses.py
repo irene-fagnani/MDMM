@@ -103,7 +103,7 @@ class LossFunctions:
       log_q = F.log_softmax(logits, dim=-1)
       return -torch.mean(torch.sum(targets * log_q, dim=-1))
   
-  import numpy as np
+import numpy as np
 from scipy.optimize import linear_sum_assignment
 from sklearn.metrics.cluster import normalized_mutual_info_score
 
@@ -212,7 +212,7 @@ class GMVAE:
     Returns:
         average of all loss values, accuracy, nmi
     """
-    self.network.train()
+    #self.network.train()
     total_loss = 0.
     recon_loss = 0.
     cat_loss = 0.
