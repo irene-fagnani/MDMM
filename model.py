@@ -2,7 +2,6 @@ import networks
 import torch
 import torch.nn as nn
 import numpy as np
-import GMVAE
 torch.autograd.set_detect_anomaly(True)
 
 
@@ -164,7 +163,7 @@ class MD_multi(nn.Module):
     #print("content",input_content_forA.size())
     #print("attr",input_attr_forA.size())
     #print("c",input_c_forA.size())
-    print("y",y.size())
+    #print("y",y.size())
     infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA,y)
     infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,y)
     output_fakeA=infA['x_rec']
@@ -256,8 +255,7 @@ class MD_multi(nn.Module):
       loss_D_gan += ad_true_loss + ad_fake_loss
 
     loss_D_cls = self.cls_loss(pred_real_cls, self.c_org)
-    loss_D = loss_D_gan + self.opts.lambda_cls * loss_D_cls 
-    self.loss_D = loss_D.item()
+    loss_D = + self.opts.lambda_cls * loss_D_cls 
     loss_D.backward()
     return loss_D_gan, loss_D_cls
 
@@ -326,7 +324,7 @@ class MD_multi(nn.Module):
     self.kl_loss_za = loss_kl_za.item()
     self.l1_self_rec_loss = loss_G_L1_self.item()
     self.l1_cc_rec_loss = loss_G_L1_cc.item()
-    self.loss_G = loss_G.item()
+    self.G_loss = loss_G.item()
 
   def backward_G_GAN_content(self, data):
     pred_cls = self.disContent.forward(data)
@@ -433,118 +431,4 @@ class MD_multi(nn.Module):
       self.enc_a_opt.load_state_dict(checkpoint['enc_a_opt'])
       self.gen_opt.load_state_dict(checkpoint['gen_opt'])
     return checkpoint['ep'], checkpoint['total_it']
-  
-  
-  ### GMVAE LOSSES ###
-  
-  
-  def train_epoch_GMVAE(self, optimizer, data_loader):
-    """Train the model for one epoch
-
-    Args:
-        optimizer: (Optim) optimizer to use in backpropagation
-        data_loader: (DataLoader) corresponding loader containing the training data
-
-    Returns:
-        average of all loss values, accuracy, nmi
-    """
-    self.network.train()
-    total_loss = 0.
-    recon_loss = 0.
-    cat_loss = 0.
-    gauss_loss = 0.
-
-    accuracy = 0.
-    nmi = 0.
-    num_batches = 0.
-
-    true_labels_list = []
-    predicted_labels_list = []
-
-    # iterate over the dataset
-    for (data, labels) in data_loader: # le dimensioni di questo data loader sono come quelle che abbiamo nel train??
-      if self.cuda == 1:
-        data = data.cuda()
-
-      optimizer.zero_grad()
-
-      # flatten data
-      data = data.view(data.size(0), -1)
-
-      # forward call
-      out_net = self.network(data, self.gumbel_temp, self.hard_gumbel)
-      unlab_loss_dic = self.unlabeled_loss(data, out_net)
-      total = unlab_loss_dic['total']
-
-      # accumulate values
-      total_loss += total.item()
-      recon_loss += unlab_loss_dic['reconstruction'].item()
-      gauss_loss += unlab_loss_dic['gaussian'].item()
-      cat_loss += unlab_loss_dic['categorical'].item()
-
-      # perform backpropagation
-      total.backward()
-      optimizer.step()
-
-      # save predicted and true labels
-      predicted = unlab_loss_dic['predicted_labels']
-      true_labels_list.append(labels)
-      predicted_labels_list.append(predicted)
-
-      num_batches += 1.
-
-    # average per batch
-    total_loss /= num_batches
-    recon_loss /= num_batches
-    gauss_loss /= num_batches
-    cat_loss /= num_batches
-
-    # concat all true and predicted labels
-    true_labels = torch.cat(true_labels_list, dim=0).cpu().numpy()
-    predicted_labels = torch.cat(predicted_labels_list, dim=0).cpu().numpy()
-
-    # compute metrics
-    accuracy = 100.0 * GMVAE.metrics.cluster_acc(predicted_labels, true_labels)
-    nmi = 100.0 * GMVAE.metrics.nmi(predicted_labels, true_labels)
-
-    return total_loss, recon_loss, gauss_loss, cat_loss, accuracy, nmi
-  
-  
-  def unlabeled_loss(self, data, out_net):
-    """Method defining the loss functions derived from the variational lower bound
-    Args:
-        data: (array) corresponding array containing the input data
-        out_net: (dict) contains the graph operations or nodes of the network output. Output del GenerativeNet
-
-    Returns:
-        loss_dic: (dict) contains the values of each loss function and predictions
-    """
-    # obtain network variables
-    z, data_recon = out_net['gaussian'], out_net['x_rec']
-    logits, prob_cat = out_net['logits'], out_net['prob_cat']
-    y_mu, y_var = out_net['y_mean'], out_net['y_var']
-    mu, var = out_net['mean'], out_net['var']
-
-    # reconstruction loss
-    loss_rec = GMVAE.losses.reconstruction_loss(data, data_recon, self.opts.rec_type)
-
-    # gaussian loss
-    loss_gauss = GMVAE.losses.gaussian_loss(z, mu, var, y_mu, y_var)
-
-    # categorical loss
-    loss_cat = -GMVAE.losses.entropy(logits, prob_cat) - np.log(0.1)
-
-    # total loss
-    loss_total = self.opts.w_rec * loss_rec + self.opts.w_gauss * loss_gauss + self.opts.w_cat * loss_cat
-
-    # obtain predictions
-    _, predicted_labels = torch.max(logits, dim=1)
-
-    loss_dic = {'total': loss_total,
-                'predicted_labels': predicted_labels,
-                'reconstruction': loss_rec,
-                'gaussian': loss_gauss,
-                'categorical': loss_cat}
-    return loss_dic
-
 
