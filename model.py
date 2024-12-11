@@ -509,11 +509,11 @@ class MD_multi(nn.Module):
     # obtain network variables
     print("prima",type(out_net['x_rec']))
     z, data_recon = out_net['gaussian'], out_net['x_rec']
-    print("dopo",type(data_recon))
     logits, prob_cat = out_net['logits'], out_net['prob_cat']
     y_mu, y_var = out_net['y_mean'], out_net['y_var']
     mu, var = out_net['mean'], out_net['var']
     # reconstruction loss
+    print("dopo",type(data_recon))
     loss_rec = GMVAE.LossFunctions.reconstruction_loss(data, data_recon, self.opts.rec_type) # data: tensore, data_recon: stringa
     # gaussian loss
     loss_gauss = GMVAE.LossFunctions.gaussian_loss(z, mu, var, y_mu, y_var)
