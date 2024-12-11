@@ -1,12 +1,12 @@
 ## Loss function parameters
-parser.add_argument('--w_gauss', default=1, type=float,
-                    help='weight of gaussian loss (default: 1)')
-parser.add_argument('--w_categ', default=1, type=float,
-                    help='weight of categorical loss (default: 1)')
-parser.add_argument('--w_rec', default=1, type=float,
-                    help='weight of reconstruction loss (default: 1)')
-parser.add_argument('--rec_type', type=str, choices=['bce', 'mse'],
-                    default='bce', help='desired reconstruction loss function (default: bce)')
+# parser.add_argument('--w_gauss', default=1, type=float,
+#                     help='weight of gaussian loss (default: 1)')
+# parser.add_argument('--w_categ', default=1, type=float,
+#                     help='weight of categorical loss (default: 1)')
+# parser.add_argument('--w_rec', default=1, type=float,
+#                     help='weight of reconstruction loss (default: 1)')
+# parser.add_argument('--rec_type', type=str, choices=['bce', 'mse'],
+#                     default='bce', help='desired reconstruction loss function (default: bce)')
 
 
 class LossFunctions:

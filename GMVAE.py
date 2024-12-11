@@ -14,6 +14,7 @@ from torch.nn import functional as F
 from scipy.io import loadmat
 from scipy.optimize import linear_sum_assignment
 from sklearn.metrics.cluster import normalized_mutual_info_score
+import torch.nn.init as init
 # Sample from the Gumbel-Softmax distribution and optionally discretize.
 # The Gumbel-Softmax distribution is a continuous relaxation of the categorical distribution
 class GumbelSoftmax(nn.Module):
@@ -322,3 +323,31 @@ class Metrics:
   
   
 
+
+
+# GMVAE Network
+class GMVAENet(nn.Module):
+  def __init__(self, x_dim, z_dim, y_dim):
+    super(GMVAENet, self).__init__()
+
+    self.inference = InferenceNet(x_dim, z_dim, y_dim)
+    self.generative = GenerativeNet(x_dim, z_dim, y_dim)
+
+    # weight initialization
+    for m in self.modules():
+      if type(m) == nn.Linear or type(m) == nn.Conv2d or type(m) == nn.ConvTranspose2d:
+        torch.nn.init.xavier_normal_(m.weight)
+        if m.bias.data is not None:
+          init.constant_(m.bias, 0)
+
+  def forward(self, x, temperature=1.0, hard=0):
+    x = x.view(x.size(0), -1)
+    out_inf = self.inference(x, temperature, hard)
+    z, y = out_inf['gaussian'], out_inf['categorical']
+    out_gen = self.generative(z, y)
+
+    # merge output
+    output = out_inf
+    for key, value in out_gen.items():
+      output[key] = value
+    return output

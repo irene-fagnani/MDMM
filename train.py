@@ -1,11 +1,12 @@
 import torch
-import losses
+#import losses
 from options import TrainOptions
 from datasets import dataset_multi
 from model import MD_multi
 from torch import nn, optim
 from saver import Saver
 import numpy as np
+import GMVAE
 
 def main():
   # parse options
@@ -17,11 +18,11 @@ def main():
   dataset = dataset_multi(opts)
   train_loader = torch.utils.data.DataLoader(dataset, batch_size=opts.batch_size, shuffle=True, num_workers=opts.nThreads)
   # losses dictionary
-  losses = {
-    "loss_D_content": [],
-    "loss_D": [],
-    "loss_G": []
-}
+#   losses = {
+#     "loss_D_content": [],
+#     "loss_D": [],
+#     "loss_G": []
+# }
   # model
   print('\n--- load model ---')
   model = MD_multi(opts)
@@ -43,7 +44,7 @@ def main():
   # train
   print('\n--- train ---')
   max_it = 1000 # 50000
-  model.network=losses.GMVAEnet(opts.x_dim, opts.gaussian_size, opts.num_classes)
+  model.network=GMVAE.GMVAENet(opts.x_dim, opts.gaussian_size, opts.num_classes)
   optimizer = optim.Adam(model.network.parameters(), lr=0.0001)
   model.gumbel_temp = opts.init_temp
   for ep in range(ep0, opts.n_ep):
@@ -69,23 +70,21 @@ def main():
       if opts.isDcontent:
         if (it + 1) % opts.d_iter != 0 and it < len(train_loader) - 2:
           model.update_D_content(images, c_org)
-          losses["loss_D_content"].append(model.disContent_loss)
-          print("loss_D_content", model.disContent_loss)
           continue
         else:
           model.update_D(images, c_org)
-          losses["loss_D"].append(model.loss_D)
-          print("loss_D", model.loss_D)
+          # losses["loss_D"].append(model.loss_D)
+          # print("loss_D", model.loss_D)
           model.update_EG()
-          losses["loss_G"].append(model.loss_G)
-          print("loss_G", model.loss_G)
+          # losses["loss_G"].append(model.loss_G)
+          # print("loss_G", model.loss_G)
       else:
         model.update_D(images, c_org)
-        losses["loss_D"].append(model.loss_D)
-        print("loss_D", model.loss_D)
+        # losses["loss_D"].append(model.loss_D)
+        # print("loss_D", model.loss_D)
         model.update_EG()
-        losses["loss_G"].append(model.loss_G)
-        print("loss_G", model.loss_G)
+        # losses["loss_G"].append(model.loss_G)
+        # print("loss_G", model.loss_G)
       # save to display file
       if not opts.no_display_img:
         saver.write_display(total_it, model)
