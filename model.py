@@ -163,7 +163,11 @@ class MD_multi(nn.Module):
     #print("content",input_content_forA.size())
     #print("attr",input_attr_forA.size())
     #print("c",input_c_forA.size())
+<<<<<<< HEAD
     #print("y",y.size())
+=======
+#print("y",y.size())
+>>>>>>> 07effdc (remove the last print)
     infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA,y)
     infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,y)
     output_fakeA=infA['x_rec']
