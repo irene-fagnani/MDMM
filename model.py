@@ -467,7 +467,7 @@ class MD_multi(nn.Module):
       # flatten data
       data = data.view(data.size(0), -1)
       # forward call
-      out_net = self.network(data, self.gumbel_temp, self.opts.hard_gumbel)
+      out_net = self.network(data, self.gumbel_temp, self.opts.hard_gumbel) # GUARDA QUI_: network genera un out_net che ha in x_recon stringhe
       unlab_loss_dic = self.unlabeled_loss(data, out_net)
       total = unlab_loss_dic['total']
       # accumulate values
@@ -511,7 +511,7 @@ class MD_multi(nn.Module):
     y_mu, y_var = out_net['y_mean'], out_net['y_var']
     mu, var = out_net['mean'], out_net['var']
     # reconstruction loss
-    loss_rec = GMVAE.LossFunctions.reconstruction_loss(data, data_recon, self.opts.rec_type)
+    loss_rec = GMVAE.LossFunctions.reconstruction_loss(data, data_recon, self.opts.rec_type) # data: tensore, data_recon: stringa
     # gaussian loss
     loss_gauss = GMVAE.LossFunctions.gaussian_loss(z, mu, var, y_mu, y_var)
     # categorical loss
