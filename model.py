@@ -507,7 +507,9 @@ class MD_multi(nn.Module):
         loss_dic: (dict) contains the values of each loss function and predictions
     """
     # obtain network variables
+    print("prima",type(out_net['x_rec']))
     z, data_recon = out_net['gaussian'], out_net['x_rec']
+    print("dopo",type(data_recon))
     logits, prob_cat = out_net['logits'], out_net['prob_cat']
     y_mu, y_var = out_net['y_mean'], out_net['y_var']
     mu, var = out_net['mean'], out_net['var']
