@@ -237,6 +237,8 @@ class LossFunctions:
           output: (array/float) depending on average parameters the result will be the mean
                                 of all the sample losses or an array with the losses per sample
       """
+      print(f"Type of 'real': {type(real)}")
+      print(f"Type of 'predicted': {type(predicted)}")
       if rec_type == 'mse':
         loss = (real - predicted).pow(2)
       elif rec_type == 'bce':
