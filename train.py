@@ -47,6 +47,7 @@ def main():
   model.network=GMVAE.GMVAENet(opts.x_dim, opts.gaussian_size, opts.num_classes)
   optimizer = optim.Adam(model.network.parameters(), lr=0.0001)
   model.gumbel_temp = opts.init_temp
+  print("train_loader shape: ",train_loader)
   for ep in range(ep0, opts.n_ep):
     for it, (images, c_org) in enumerate(train_loader):
       #print("x_dim",images.size())
@@ -95,7 +96,7 @@ def main():
         saver.write_model(-1, total_it, model)
         break
       
-    print("train_loader shape: ",train_loader.shape())
+    print("train_loader shape: ",train_loader)
     train_loss, train_rec, train_gauss, train_cat, train_acc, train_nmi = model.train_epoch_GMVAE(optimizer, train_loader)
     if ep>=1:
       model.gumbel_temp = np.maximum(opts.init_temp * np.exp(-opts.decay_temp_rate * ep), opts.min_temp)
