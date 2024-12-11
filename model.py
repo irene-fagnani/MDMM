@@ -514,7 +514,7 @@ class MD_multi(nn.Module):
     mu, var = out_net['mean'], out_net['var']
     # reconstruction loss
     print("dopo",type(data_recon))
-    loss_rec = GMVAE.LossFunctions.reconstruction_loss(data, data_recon, self.opts.rec_type) # data: tensore, data_recon: stringa
+    loss_rec = GMVAE.LossFunctions.reconstruction_loss(data, data_recon, rec_type=self.opts.rec_type) # data: tensore, data_recon: stringa
     # gaussian loss
     loss_gauss = GMVAE.LossFunctions.gaussian_loss(z, mu, var, y_mu, y_var)
     # categorical loss
