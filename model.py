@@ -488,7 +488,7 @@ class MD_multi(nn.Module):
       predicted = unlab_loss_dic['predicted_labels'] # torch.Size([2])
       #print(f"Predicted labels shape: {predicted.shape}")
       decoded_labels = torch.argmax(labels, dim=1)  # Decode one-hot labels
-      print(f"True labels shape: {decoded_labels.shape}")
+      #print(f"True labels shape: {decoded_labels.shape}")
       true_labels_list.append(decoded_labels)
       predicted_labels_list.append(predicted)
       num_batches += 1.
@@ -498,8 +498,8 @@ class MD_multi(nn.Module):
     gauss_loss /= num_batches
     cat_loss /= num_batches
     # concat all true and predicted labels
-    print("true_lanels_list dimension: ",len(true_labels_list))
-    print("predicted_lanels_list dimension: ",len(predicted_labels_list))
+    #print("true_lanels_list dimension: ",len(true_labels_list))
+    #print("predicted_lanels_list dimension: ",len(predicted_labels_list))
     true_labels = torch.cat(true_labels_list, dim=0).cpu().numpy()
     predicted_labels = torch.cat(predicted_labels_list, dim=0).cpu().numpy()
     # compute metrics
@@ -521,7 +521,7 @@ class MD_multi(nn.Module):
     #print("prima",type(out_net['x_rec']))
     z, data_recon = out_net['gaussian'], out_net['x_rec']
     logits, prob_cat = out_net['logits'], out_net['prob_cat']
-    print(f"logits shape: {logits.shape}, batch size: {data.shape[0]}")
+    #print(f"logits shape: {logits.shape}, batch size: {data.shape[0]}")
     y_mu, y_var = out_net['y_mean'], out_net['y_var']
     mu, var = out_net['mean'], out_net['var']
     # reconstruction loss
