@@ -460,10 +460,13 @@ class MD_multi(nn.Module):
     true_labels_list = []
     predicted_labels_list = []
     metrics=GMVAE.Metrics()
+    print("data_loader",data_loader.size())
     # iterate over the dataset
     for (data, labels) in data_loader: # le dimensioni di questo data loader sono come quelle che abbiamo nel train??
       if self.cuda == 1:
         data = data.cuda()
+      print("data",data.size())
+      print("labels",labels.size())
       optimizer.zero_grad()
       # flatten data
       data = data.view(data.size(0), -1)
