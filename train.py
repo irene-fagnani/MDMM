@@ -47,7 +47,7 @@ def main():
   model.network=GMVAE.GMVAENet(opts.x_dim, opts.gaussian_size, opts.num_classes)
   optimizer = optim.Adam(model.network.parameters(), lr=0.0001)
   model.gumbel_temp = opts.init_temp
-  print("train_loader shape: ",train_loader)
+  #print("train_loader shape: ",train_loader)
   for ep in range(ep0, opts.n_ep):
     for it, (images, c_org) in enumerate(train_loader):
       #print("x_dim",images.size())

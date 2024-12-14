@@ -164,7 +164,7 @@ class MD_multi(nn.Module):
     #print("content",input_content_forA.size())
     #print("attr",input_attr_forA.size())
     #print("c",input_c_forA.size())
-    print("y",y.size())
+    #print("y",y.size())
     #print("y",y.size())
     infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA,y)
     infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,y)
@@ -493,8 +493,8 @@ class MD_multi(nn.Module):
     true_labels = torch.cat(true_labels_list, dim=0).cpu().numpy()
     predicted_labels = torch.cat(predicted_labels_list, dim=0).cpu().numpy()
     # compute metrics
-    accuracy = 100.0 * GMVAE.metrics.cluster_acc(predicted_labels, true_labels)
-    nmi = 100.0 * GMVAE.metrics.nmi(predicted_labels, true_labels)
+    accuracy = 100.0 * GMVAE.Metrics.cluster_acc(predicted_labels, true_labels)
+    nmi = 100.0 * GMVAE.Metrics.nmi(predicted_labels, true_labels)
     return total_loss, recon_loss, gauss_loss, cat_loss, accuracy, nmi
   
   
