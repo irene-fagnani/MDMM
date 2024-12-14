@@ -459,6 +459,7 @@ class MD_multi(nn.Module):
     num_batches = 0.
     true_labels_list = []
     predicted_labels_list = []
+    metrics=GMVAE.Metrics()
     # iterate over the dataset
     for (data, labels) in data_loader: # le dimensioni di questo data loader sono come quelle che abbiamo nel train??
       if self.cuda == 1:
@@ -493,8 +494,8 @@ class MD_multi(nn.Module):
     true_labels = torch.cat(true_labels_list, dim=0).cpu().numpy()
     predicted_labels = torch.cat(predicted_labels_list, dim=0).cpu().numpy()
     # compute metrics
-    accuracy = 100.0 * GMVAE.Metrics.cluster_acc(predicted_labels, true_labels)
-    nmi = 100.0 * GMVAE.Metrics.nmi(predicted_labels, true_labels)
+    accuracy = 100.0 * metrics.cluster_acc(predicted_labels, true_labels)
+    nmi = 100.0 * metrics.nmi(predicted_labels, true_labels)
     return total_loss, recon_loss, gauss_loss, cat_loss, accuracy, nmi
   
   
