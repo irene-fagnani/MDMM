@@ -522,7 +522,7 @@ class MD_multi(nn.Module):
     # categorical loss
     loss_cat = -loss_functions.entropy(logits, prob_cat) - np.log(0.1)
     # total loss
-    loss_total = self.opts.w_rec * loss_rec + self.opts.w_gauss * loss_gauss + self.opts.w_cat * loss_cat
+    loss_total = self.opts.w_rec * loss_rec + self.opts.w_gauss * loss_gauss + self.opts.w_categ * loss_cat
     # obtain predictions
     _, predicted_labels = torch.max(logits, dim=1)
     loss_dic = {'total': loss_total,
