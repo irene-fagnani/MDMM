@@ -17,6 +17,7 @@ def main():
   print('\n--- load dataset ---')
   dataset = dataset_multi(opts)
   train_loader = torch.utils.data.DataLoader(dataset, batch_size=opts.batch_size, shuffle=True, num_workers=opts.nThreads)
+  print('train_loader', len(train_loader.dataset))
   # losses dictionary
 #   losses = {
 #     "loss_D_content": [],
