@@ -485,6 +485,8 @@ class MD_multi(nn.Module):
       optimizer.step()
       # save predicted and true labels
       predicted = unlab_loss_dic['predicted_labels']
+      print(f"Predicted labels shape: {predicted.shape}")
+      print(f"True labels shape: {labels.shape}")
       true_labels_list.append(labels)
       predicted_labels_list.append(predicted)
       num_batches += 1.
