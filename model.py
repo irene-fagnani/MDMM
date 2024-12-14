@@ -516,11 +516,11 @@ class MD_multi(nn.Module):
     # reconstruction loss
     # print("dopo",type(data_recon))
     # print("data type",type(data))
-    loss_rec = GMVAE.loss_functions.reconstruction_loss(data, data_recon) # data: tensore, data_recon: stringa
+    loss_rec = loss_functions.reconstruction_loss(data, data_recon) # data: tensore, data_recon: stringa
     # gaussian loss
-    loss_gauss = GMVAE.loss_functions.gaussian_loss(z, mu, var, y_mu, y_var)
+    loss_gauss = loss_functions.gaussian_loss(z, mu, var, y_mu, y_var)
     # categorical loss
-    loss_cat = -GMVAE.loss_functions.entropy(logits, prob_cat) - np.log(0.1)
+    loss_cat = -loss_functions.entropy(logits, prob_cat) - np.log(0.1)
     # total loss
     loss_total = self.opts.w_rec * loss_rec + self.opts.w_gauss * loss_gauss + self.opts.w_cat * loss_cat
     # obtain predictions
