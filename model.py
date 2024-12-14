@@ -519,6 +519,7 @@ class MD_multi(nn.Module):
     #print("prima",type(out_net['x_rec']))
     z, data_recon = out_net['gaussian'], out_net['x_rec']
     logits, prob_cat = out_net['logits'], out_net['prob_cat']
+    print(f"logits shape: {logits.shape}, batch size: {data.shape[0]}")
     y_mu, y_var = out_net['y_mean'], out_net['y_var']
     mu, var = out_net['mean'], out_net['var']
     # reconstruction loss
