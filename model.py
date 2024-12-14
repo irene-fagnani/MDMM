@@ -39,6 +39,8 @@ class MD_multi(nn.Module):
     #if self.isDcontent:
     self.disContent = networks.MD_Dis_content(c_dim=opts.num_domains) 
     self.disContent_opt = torch.optim.Adam(self.disContent.parameters(), lr=lr_dcontent, betas=(0.5, 0.999), weight_decay=0.0001)
+    self.inf=dict()
+    self.infA=dict()
 
     self.cls_loss = nn.BCEWithLogitsLoss()
 
@@ -181,7 +183,7 @@ class MD_multi(nn.Module):
 
     # get reconstructed encoded z_a
     if self.concat:
-      inf, infvar = self.enc_a.forward(self.fake_encoded_img, self.c_org)
+      self.inf, infvar = self.enc_a.forward(self.fake_encoded_img, self.c_org)
       self.mu_recon=inf["mean"]
       self.logvar_recon=infvar['var'].log()
       std_recon = self.logvar_recon.mul(0.5).exp_()
@@ -194,7 +196,7 @@ class MD_multi(nn.Module):
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
 
     # second cross translation
-    infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A,y)
+    self.infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A,y)
     self.fake_A_recon=infA['x_rec']
     infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B,y)
     self.fake_B_recon =infB['x_rec']
@@ -472,7 +474,8 @@ class MD_multi(nn.Module):
       # flatten data
       data = data.view(data.size(0), -1)
       # forward call
-      out_net = self.network(data, self.gumbel_temp, self.opts.hard_gumbel) # GUARDA QUI_: network genera un out_net che ha in x_recon stringhe
+      #out_net = self.network(data, self.gumbel_temp, self.opts.hard_gumbel) # GUARDA QUI_: network genera un out_net che ha in x_recon stringhe
+      out_net= self.inf | self.infA
       #print("on",out_net)
       unlab_loss_dic = self.unlabeled_loss(data, out_net)
       total = unlab_loss_dic['total']
@@ -487,9 +490,9 @@ class MD_multi(nn.Module):
       # save predicted and true labels
       predicted = unlab_loss_dic['predicted_labels'] # torch.Size([2])
       #print(f"Predicted labels shape: {predicted.shape}")
-      decoded_labels = torch.argmax(labels, dim=1)  # Decode one-hot labels
+      #decoded_labels = torch.argmax(labels, dim=1)  # Decode one-hot labels
       #print(f"True labels shape: {decoded_labels.shape}")
-      true_labels_list.append(decoded_labels)
+      true_labels_list.append(labels[1])
       predicted_labels_list.append(predicted)
       num_batches += 1.
     # average per batch
@@ -512,7 +515,7 @@ class MD_multi(nn.Module):
     """Method defining the loss functions derived from the variational lower bound
     Args:
         data: (array) corresponding array containing the input data
-        out_net: (dict) contains the graph operations or nodes of the network output. Output del GenerativeNet
+        out_net: (dict) contains the graph operations or nodes of the network output. Output del GMVAENet
     Returns:
         loss_dic: (dict) contains the values of each loss function and predictions
     """
@@ -521,7 +524,7 @@ class MD_multi(nn.Module):
     #print("prima",type(out_net['x_rec']))
     z, data_recon = out_net['gaussian'], out_net['x_rec']
     logits, prob_cat = out_net['logits'], out_net['prob_cat']
-    #print(f"logits shape: {logits.shape}, batch size: {data.shape[0]}")
+    print(f"logits shape: {logits.shape}, batch size: {data.shape[0]}")
     y_mu, y_var = out_net['y_mean'], out_net['y_var']
     mu, var = out_net['mean'], out_net['var']
     # reconstruction loss
