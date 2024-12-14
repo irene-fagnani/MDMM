@@ -466,8 +466,8 @@ class MD_multi(nn.Module):
       if self.cuda == 1:
         data = data.cuda()
       #print("data",data.shape)
-      print("labels",labels.shape)
-      print("labels",labels)
+      #print("labels",labels.shape)
+      #print("labels",labels)
       optimizer.zero_grad()
       # flatten data
       data = data.view(data.size(0), -1)
@@ -486,9 +486,10 @@ class MD_multi(nn.Module):
       optimizer.step()
       # save predicted and true labels
       predicted = unlab_loss_dic['predicted_labels'] # torch.Size([2])
-      print(f"Predicted labels shape: {predicted.shape}")
-      print(f"True labels shape: {labels.shape}")
-      true_labels_list.append(labels)
+      #print(f"Predicted labels shape: {predicted.shape}")
+      decoded_labels = torch.argmax(labels, dim=1)  # Decode one-hot labels
+      print(f"True labels shape: {decoded_labels.shape}")
+      true_labels_list.append(decoded_labels)
       predicted_labels_list.append(predicted)
       num_batches += 1.
     # average per batch
