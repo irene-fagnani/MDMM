@@ -494,6 +494,8 @@ class MD_multi(nn.Module):
     gauss_loss /= num_batches
     cat_loss /= num_batches
     # concat all true and predicted labels
+    print("true_lanels_list dimension: ",len(true_labels_list))
+    print("predicted_lanels_list dimension: ",len(predicted_labels_list))
     true_labels = torch.cat(true_labels_list, dim=0).cpu().numpy()
     predicted_labels = torch.cat(predicted_labels_list, dim=0).cpu().numpy()
     # compute metrics
