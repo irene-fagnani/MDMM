@@ -224,7 +224,7 @@ class LossFunctions:
       return loss.sum(-1).mean()
 
 
-  def reconstruction_loss( real, predicted, rec_type='mse' ):
+  def reconstruction_loss(self, real, predicted, rec_type='mse' ):
       """Reconstruction loss between the true and predicted outputs
          mse = (1/n)*Σ(real - predicted)^2
          bce = (1/n) * -Σ(real*log(predicted) + (1 - real)*log(1 - predicted))
@@ -237,9 +237,9 @@ class LossFunctions:
           output: (array/float) depending on average parameters the result will be the mean
                                 of all the sample losses or an array with the losses per sample
       """
-      print(f"Type of 'real': {type(real)}")
-      print(f"Type of 'predicted': {type(predicted)}")
-      print("valore predicted",predicted)
+      # print(f"Type of 'real': {type(real)}")
+      # print(f"Type of 'predicted': {type(predicted)}")
+      # print("valore predicted",predicted)
       if rec_type == 'mse':
         loss = (real - predicted).pow(2)
       elif rec_type == 'bce':

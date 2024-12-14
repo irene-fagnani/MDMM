@@ -507,19 +507,20 @@ class MD_multi(nn.Module):
         loss_dic: (dict) contains the values of each loss function and predictions
     """
     # obtain network variables
-    print("prima",type(out_net['x_rec']))
+    loss_functions = GMVAE.LossFunctions()
+    #print("prima",type(out_net['x_rec']))
     z, data_recon = out_net['gaussian'], out_net['x_rec']
     logits, prob_cat = out_net['logits'], out_net['prob_cat']
     y_mu, y_var = out_net['y_mean'], out_net['y_var']
     mu, var = out_net['mean'], out_net['var']
     # reconstruction loss
-    print("dopo",type(data_recon))
-    print("data type",type(data))
-    loss_rec = GMVAE.LossFunctions.reconstruction_loss(data, data_recon) # data: tensore, data_recon: stringa
+    # print("dopo",type(data_recon))
+    # print("data type",type(data))
+    loss_rec = GMVAE.loss_functions.reconstruction_loss(data, data_recon) # data: tensore, data_recon: stringa
     # gaussian loss
-    loss_gauss = GMVAE.LossFunctions.gaussian_loss(z, mu, var, y_mu, y_var)
+    loss_gauss = GMVAE.loss_functions.gaussian_loss(z, mu, var, y_mu, y_var)
     # categorical loss
-    loss_cat = -GMVAE.LossFunctions.entropy(logits, prob_cat) - np.log(0.1)
+    loss_cat = -GMVAE.loss_functions.entropy(logits, prob_cat) - np.log(0.1)
     # total loss
     loss_total = self.opts.w_rec * loss_rec + self.opts.w_gauss * loss_gauss + self.opts.w_cat * loss_cat
     # obtain predictions
