@@ -465,8 +465,9 @@ class MD_multi(nn.Module):
     for (data, labels) in data_loader: # le dimensioni di questo data loader sono come quelle che abbiamo nel train??
       if self.cuda == 1:
         data = data.cuda()
-      print("data",data.shape)
+      #print("data",data.shape)
       print("labels",labels.shape)
+      print("labels",labels)
       optimizer.zero_grad()
       # flatten data
       data = data.view(data.size(0), -1)
@@ -484,7 +485,7 @@ class MD_multi(nn.Module):
       total.backward()
       optimizer.step()
       # save predicted and true labels
-      predicted = unlab_loss_dic['predicted_labels']
+      predicted = unlab_loss_dic['predicted_labels'] # torch.Size([2])
       print(f"Predicted labels shape: {predicted.shape}")
       print(f"True labels shape: {labels.shape}")
       true_labels_list.append(labels)
@@ -533,8 +534,7 @@ class MD_multi(nn.Module):
     # total loss
     loss_total = self.opts.w_rec * loss_rec + self.opts.w_gauss * loss_gauss + self.opts.w_categ * loss_cat
     # obtain predictions
-    _, predicted_labels = torch.max(logits, dim=1)
-    print(f"predicted_labels shape inside the unlabeled loss: {predicted_labels.shape}")
+    _, predicted_labels = torch.max(logits, dim=1) # torch.Size([2])
     loss_dic = {'total': loss_total,
                 'predicted_labels': predicted_labels,
                 'reconstruction': loss_rec,
