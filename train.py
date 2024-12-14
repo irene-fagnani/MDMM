@@ -7,6 +7,7 @@ from torch import nn, optim
 from saver import Saver
 import numpy as np
 import GMVAE
+import matplotlib.pyplot as plt
 
 def main():
   # parse options
@@ -19,11 +20,17 @@ def main():
   train_loader = torch.utils.data.DataLoader(dataset, batch_size=opts.batch_size, shuffle=True, num_workers=opts.nThreads)
   print('train_loader', len(train_loader.dataset))
   # losses dictionary
-#   losses = {
-#     "loss_D_content": [],
-#     "loss_D": [],
-#     "loss_G": []
-# }
+  losses_graph = {
+    "loss_D_content": [],
+    "loss_D": [],
+    "loss_G": [],
+    "train_loss": [],
+    "train_rec": [],
+    "train_gauss": [],
+    "train_cat": [],
+    "train_acc": [],
+    "train_nmi": []
+  }
   # model
   print('\n--- load model ---')
   model = MD_multi(opts)
@@ -75,17 +82,17 @@ def main():
           continue
         else:
           model.update_D(images, c_org)
-          # losses["loss_D"].append(model.loss_D)
+          losses_graph["loss_D"].append(model.loss_D)
           # print("loss_D", model.loss_D)
           model.update_EG()
-          # losses["loss_G"].append(model.loss_G)
+          losses_graph["loss_G"].append(model.loss_G)
           # print("loss_G", model.loss_G)
       else:
         model.update_D(images, c_org)
-        # losses["loss_D"].append(model.loss_D)
+        losses_graph["loss_D"].append(model.loss_D)
         # print("loss_D", model.loss_D)
         model.update_EG()
-        # losses["loss_G"].append(model.loss_G)
+        losses_graph["loss_G"].append(model.loss_G)
         # print("loss_G", model.loss_G)
       # save to display file
       if not opts.no_display_img:
@@ -98,7 +105,7 @@ def main():
         break
       
     #print("train_loader shape: ",train_loader)
-    train_loss, train_rec, train_gauss, train_cat, train_acc, train_nmi = model.train_epoch_GMVAE(optimizer, train_loader)
+    losses_graph["train_loss"], losses_graph["train_rec"], losses_graph["train_gauss"], losses_graph["train_cat"], losses_graph["train_acc"], losses_graph["train_nmi"] = model.train_epoch_GMVAE(optimizer, train_loader)
     if ep>=1:
       model.gumbel_temp = np.maximum(opts.init_temp * np.exp(-opts.decay_temp_rate * ep), opts.min_temp)
     # decay learning rate
@@ -113,17 +120,16 @@ def main():
   
 
   # Plot each loss
-  # for key, value in losses.items():
-  #     plt.figure(figsize=(10, 5))
-  #     plt.plot(value, label=key)
-  #     plt.title(f"Loss Curve: {key}")
-  #     plt.xlabel("Iteration")
-  #     plt.ylabel("Loss")
-  #     plt.legend()
-  #     plt.grid()
-  #     plt.show()
-  #     plt.savefig(f"loss_{key}.png")
-
+  for key, value in losses_graph.items():
+       plt.figure(figsize=(10, 5))
+       plt.plot(value, label=key)
+       plt.title(f"Loss Curve: {key}")
+       plt.xlabel("Iteration")
+       plt.ylabel("Loss")
+       plt.legend()
+       plt.grid()
+       plt.show()
+       plt.savefig(f"loss_{key}.png")
   return
 
 if __name__ == '__main__':
