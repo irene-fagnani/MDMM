@@ -1,0 +1,748 @@
+y torch.Size([2, 2])
+loss_G 22.852767944335938
+total_it: 213 (ep 42, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.050001859664917
+y torch.Size([2, 2])
+loss_G 23.181737899780273
+total_it: 214 (ep 42, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5677976608276367
+y torch.Size([2, 2])
+loss_G 27.730369567871094
+total_it: 215 (ep 43, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.573288917541504
+y torch.Size([2, 2])
+loss_G 35.67207717895508
+total_it: 216 (ep 43, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5655570030212402
+y torch.Size([2, 2])
+loss_G 15.729498863220215
+total_it: 217 (ep 43, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5460543632507324
+y torch.Size([2, 2])
+loss_G 20.377309799194336
+total_it: 218 (ep 43, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5842822790145874
+y torch.Size([2, 2])
+loss_G 9.871443748474121
+total_it: 219 (ep 43, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5561838150024414
+y torch.Size([2, 2])
+loss_G 11.38766860961914
+total_it: 220 (ep 44, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5510468482971191
+y torch.Size([2, 2])
+loss_G 24.289602279663086
+total_it: 221 (ep 44, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.338996171951294
+y torch.Size([2, 2])
+loss_G 28.45115852355957
+total_it: 222 (ep 44, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.567430019378662
+y torch.Size([2, 2])
+loss_G 14.724749565124512
+total_it: 223 (ep 44, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5510631799697876
+y torch.Size([2, 2])
+loss_G 13.804232597351074
+total_it: 224 (ep 44, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6672431230545044
+y torch.Size([2, 2])
+loss_G 21.239517211914062
+total_it: 225 (ep 45, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5816854238510132
+y torch.Size([2, 2])
+loss_G 14.695313453674316
+total_it: 226 (ep 45, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.1399714946746826
+y torch.Size([2, 2])
+loss_G 34.59609603881836
+total_it: 227 (ep 45, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6371362209320068
+y torch.Size([2, 2])
+loss_G 38.77840805053711
+total_it: 228 (ep 45, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5526586771011353
+y torch.Size([2, 2])
+loss_G 24.349069595336914
+total_it: 229 (ep 45, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.593553066253662
+y torch.Size([2, 2])
+loss_G 22.5179500579834
+total_it: 230 (ep 46, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5545644760131836
+y torch.Size([2, 2])
+loss_G 34.413387298583984
+total_it: 231 (ep 46, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.8567527532577515
+y torch.Size([2, 2])
+loss_G 24.549869537353516
+total_it: 232 (ep 46, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5474878549575806
+y torch.Size([2, 2])
+loss_G 38.146034240722656
+total_it: 233 (ep 46, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.581878900527954
+y torch.Size([2, 2])
+loss_G 25.87787437438965
+total_it: 234 (ep 46, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5864537954330444
+y torch.Size([2, 2])
+loss_G 23.952329635620117
+total_it: 235 (ep 47, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.543893575668335
+y torch.Size([2, 2])
+loss_G 27.817167282104492
+total_it: 236 (ep 47, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.549599051475525
+y torch.Size([2, 2])
+loss_G 34.014400482177734
+total_it: 237 (ep 47, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5805848836898804
+y torch.Size([2, 2])
+loss_G 15.609304428100586
+total_it: 238 (ep 47, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5436289310455322
+y torch.Size([2, 2])
+loss_G 23.49027442932129
+total_it: 239 (ep 47, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5417431592941284
+y torch.Size([2, 2])
+loss_G 25.359323501586914
+total_it: 240 (ep 48, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6010048389434814
+y torch.Size([2, 2])
+loss_G 15.30242919921875
+total_it: 241 (ep 48, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5416938066482544
+y torch.Size([2, 2])
+loss_G 27.347267150878906
+total_it: 242 (ep 48, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5511598587036133
+y torch.Size([2, 2])
+loss_G 27.171154022216797
+total_it: 243 (ep 48, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5546950101852417
+y torch.Size([2, 2])
+loss_G 16.674846649169922
+total_it: 244 (ep 48, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5851342678070068
+y torch.Size([2, 2])
+loss_G 26.696332931518555
+total_it: 245 (ep 49, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.549668788909912
+y torch.Size([2, 2])
+loss_G 26.750619888305664
+total_it: 246 (ep 49, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5810222625732422
+y torch.Size([2, 2])
+loss_G 13.917817115783691
+total_it: 247 (ep 49, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5737438201904297
+y torch.Size([2, 2])
+loss_G 28.818220138549805
+total_it: 248 (ep 49, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5448648929595947
+y torch.Size([2, 2])
+loss_G 43.66966247558594
+total_it: 249 (ep 49, it 4), lr 0.000100
+--- save the model @ ep 49 ---
+y torch.Size([2, 2])
+loss_D 1.5427329540252686
+y torch.Size([2, 2])
+loss_G 42.50688934326172
+total_it: 250 (ep 50, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.542237401008606
+y torch.Size([2, 2])
+loss_G 27.426843643188477
+total_it: 251 (ep 50, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5408918857574463
+y torch.Size([2, 2])
+loss_G 17.913684844970703
+total_it: 252 (ep 50, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5772954225540161
+y torch.Size([2, 2])
+loss_G 26.81125831604004
+total_it: 253 (ep 50, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5409305095672607
+y torch.Size([2, 2])
+loss_G 31.394817352294922
+total_it: 254 (ep 50, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5411105155944824
+y torch.Size([2, 2])
+loss_G 41.6157112121582
+total_it: 255 (ep 51, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.552376389503479
+y torch.Size([2, 2])
+loss_G 41.70128631591797
+total_it: 256 (ep 51, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5613129138946533
+y torch.Size([2, 2])
+loss_G 33.14968490600586
+total_it: 257 (ep 51, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6418404579162598
+y torch.Size([2, 2])
+loss_G 17.28267478942871
+total_it: 258 (ep 51, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5434273481369019
+y torch.Size([2, 2])
+loss_G 27.068803787231445
+total_it: 259 (ep 51, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.54086172580719
+y torch.Size([2, 2])
+loss_G 33.83728790283203
+total_it: 260 (ep 52, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.658937692642212
+y torch.Size([2, 2])
+loss_G 44.9609260559082
+total_it: 261 (ep 52, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5411127805709839
+y torch.Size([2, 2])
+loss_G 30.91874122619629
+total_it: 262 (ep 52, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.491105794906616
+y torch.Size([2, 2])
+loss_G 28.950374603271484
+total_it: 263 (ep 52, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5417871475219727
+y torch.Size([2, 2])
+loss_G 35.97785568237305
+total_it: 264 (ep 52, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 3.6356964111328125
+y torch.Size([2, 2])
+loss_G 16.298133850097656
+total_it: 265 (ep 53, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.699092984199524
+y torch.Size([2, 2])
+loss_G 37.181060791015625
+total_it: 266 (ep 53, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.8795713186264038
+y torch.Size([2, 2])
+loss_G 39.33015060424805
+total_it: 267 (ep 53, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.1988630294799805
+y torch.Size([2, 2])
+loss_G 12.553183555603027
+total_it: 268 (ep 53, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.7357795238494873
+y torch.Size([2, 2])
+loss_G 18.064245223999023
+total_it: 269 (ep 53, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.7458868026733398
+y torch.Size([2, 2])
+loss_G 17.031522750854492
+total_it: 270 (ep 54, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6938717365264893
+y torch.Size([2, 2])
+loss_G 20.12964630126953
+total_it: 271 (ep 54, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.0022764205932617
+y torch.Size([2, 2])
+loss_G 18.750974655151367
+total_it: 272 (ep 54, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.682210683822632
+y torch.Size([2, 2])
+loss_G 14.611625671386719
+total_it: 273 (ep 54, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.549849271774292
+y torch.Size([2, 2])
+loss_G 20.8181209564209
+total_it: 274 (ep 54, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.3094382286071777
+y torch.Size([2, 2])
+loss_G 19.30786895751953
+total_it: 275 (ep 55, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.8306279182434082
+y torch.Size([2, 2])
+loss_G 15.56626033782959
+total_it: 276 (ep 55, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5464630126953125
+y torch.Size([2, 2])
+loss_G 20.414438247680664
+total_it: 277 (ep 55, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.556997299194336
+y torch.Size([2, 2])
+loss_G 20.3150634765625
+total_it: 278 (ep 55, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.1391661167144775
+y torch.Size([2, 2])
+loss_G 14.635479927062988
+total_it: 279 (ep 55, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.007288932800293
+y torch.Size([2, 2])
+loss_G 15.473129272460938
+total_it: 280 (ep 56, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6200921535491943
+y torch.Size([2, 2])
+loss_G 19.582996368408203
+total_it: 281 (ep 56, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.8563207387924194
+y torch.Size([2, 2])
+loss_G 16.569292068481445
+total_it: 282 (ep 56, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.732268214225769
+y torch.Size([2, 2])
+loss_G 17.1844482421875
+total_it: 283 (ep 56, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5642386674880981
+y torch.Size([2, 2])
+loss_G 18.647830963134766
+total_it: 284 (ep 56, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.601807951927185
+y torch.Size([2, 2])
+loss_G 14.18447208404541
+total_it: 285 (ep 57, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 3.101698637008667
+y torch.Size([2, 2])
+loss_G 18.76987648010254
+total_it: 286 (ep 57, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5627567768096924
+y torch.Size([2, 2])
+loss_G 19.176170349121094
+total_it: 287 (ep 57, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5573842525482178
+y torch.Size([2, 2])
+loss_G 15.372097969055176
+total_it: 288 (ep 57, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5506248474121094
+y torch.Size([2, 2])
+loss_G 21.82477378845215
+total_it: 289 (ep 57, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5559686422348022
+y torch.Size([2, 2])
+loss_G 19.189468383789062
+total_it: 290 (ep 58, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6708996295928955
+y torch.Size([2, 2])
+loss_G 19.48870277404785
+total_it: 291 (ep 58, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 3.145501136779785
+y torch.Size([2, 2])
+loss_G 18.353404998779297
+total_it: 292 (ep 58, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.7231425046920776
+y torch.Size([2, 2])
+loss_G 18.782245635986328
+total_it: 293 (ep 58, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5640439987182617
+y torch.Size([2, 2])
+loss_G 20.928091049194336
+total_it: 294 (ep 58, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5548179149627686
+y torch.Size([2, 2])
+loss_G 17.74129867553711
+total_it: 295 (ep 59, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5825552940368652
+y torch.Size([2, 2])
+loss_G 21.631996154785156
+total_it: 296 (ep 59, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5623713731765747
+y torch.Size([2, 2])
+loss_G 17.613964080810547
+total_it: 297 (ep 59, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5903408527374268
+y torch.Size([2, 2])
+loss_G 16.839656829833984
+total_it: 298 (ep 59, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.548222541809082
+y torch.Size([2, 2])
+loss_G 17.00718879699707
+total_it: 299 (ep 59, it 4), lr 0.000100
+--- save the model @ ep 59 ---
+y torch.Size([2, 2])
+loss_D 1.5450431108474731
+y torch.Size([2, 2])
+loss_G 16.992403030395508
+total_it: 300 (ep 60, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.691500186920166
+y torch.Size([2, 2])
+loss_G 16.591951370239258
+total_it: 301 (ep 60, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6576547622680664
+y torch.Size([2, 2])
+loss_G 19.03396224975586
+total_it: 302 (ep 60, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.554373860359192
+y torch.Size([2, 2])
+loss_G 20.88422966003418
+total_it: 303 (ep 60, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6245230436325073
+y torch.Size([2, 2])
+loss_G 15.853205680847168
+total_it: 304 (ep 60, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.545936107635498
+y torch.Size([2, 2])
+loss_G 17.280553817749023
+total_it: 305 (ep 61, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5462807416915894
+y torch.Size([2, 2])
+loss_G 19.270763397216797
+total_it: 306 (ep 61, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5519137382507324
+y torch.Size([2, 2])
+loss_G 17.712575912475586
+total_it: 307 (ep 61, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5704216957092285
+y torch.Size([2, 2])
+loss_G 17.853538513183594
+total_it: 308 (ep 61, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.572885513305664
+y torch.Size([2, 2])
+loss_G 20.452133178710938
+total_it: 309 (ep 61, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.569772481918335
+y torch.Size([2, 2])
+loss_G 18.103012084960938
+total_it: 310 (ep 62, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5475366115570068
+y torch.Size([2, 2])
+loss_G 22.31018829345703
+total_it: 311 (ep 62, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5476679801940918
+y torch.Size([2, 2])
+loss_G 22.806774139404297
+total_it: 312 (ep 62, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5610848665237427
+y torch.Size([2, 2])
+loss_G 25.08211326599121
+total_it: 313 (ep 62, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.9364063739776611
+y torch.Size([2, 2])
+loss_G 17.158411026000977
+total_it: 314 (ep 62, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5954495668411255
+y torch.Size([2, 2])
+loss_G 18.447105407714844
+total_it: 315 (ep 63, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5698857307434082
+y torch.Size([2, 2])
+loss_G 17.930744171142578
+total_it: 316 (ep 63, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.575753927230835
+y torch.Size([2, 2])
+loss_G 19.951086044311523
+total_it: 317 (ep 63, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5582964420318604
+y torch.Size([2, 2])
+loss_G 16.550857543945312
+total_it: 318 (ep 63, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5462535619735718
+y torch.Size([2, 2])
+loss_G 17.070314407348633
+total_it: 319 (ep 63, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.04415225982666
+y torch.Size([2, 2])
+loss_G 16.79751205444336
+total_it: 320 (ep 64, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 3.0092554092407227
+y torch.Size([2, 2])
+loss_G 18.74864387512207
+total_it: 321 (ep 64, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.540395975112915
+y torch.Size([2, 2])
+loss_G 22.79129409790039
+total_it: 322 (ep 64, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.24810791015625
+y torch.Size([2, 2])
+loss_G 20.45020866394043
+total_it: 323 (ep 64, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.844127893447876
+y torch.Size([2, 2])
+loss_G 17.421588897705078
+total_it: 324 (ep 64, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.7754591703414917
+y torch.Size([2, 2])
+loss_G 18.060165405273438
+total_it: 325 (ep 65, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6103909015655518
+y torch.Size([2, 2])
+loss_G 20.297332763671875
+total_it: 326 (ep 65, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.4345827102661133
+y torch.Size([2, 2])
+loss_G 14.009146690368652
+total_it: 327 (ep 65, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.9071134328842163
+y torch.Size([2, 2])
+loss_G 14.358908653259277
+total_it: 328 (ep 65, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6830766201019287
+y torch.Size([2, 2])
+loss_G 18.61317253112793
+total_it: 329 (ep 65, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.59749174118042
+y torch.Size([2, 2])
+loss_G 17.29510498046875
+total_it: 330 (ep 66, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6198710203170776
+y torch.Size([2, 2])
+loss_G 20.1406307220459
+total_it: 331 (ep 66, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.594733476638794
+y torch.Size([2, 2])
+loss_G 20.611352920532227
+total_it: 332 (ep 66, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.8189585208892822
+y torch.Size([2, 2])
+loss_G 19.526756286621094
+total_it: 333 (ep 66, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5795170068740845
+y torch.Size([2, 2])
+loss_G 17.479938507080078
+total_it: 334 (ep 66, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5573006868362427
+y torch.Size([2, 2])
+loss_G 16.909221649169922
+total_it: 335 (ep 67, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5581687688827515
+y torch.Size([2, 2])
+loss_G 19.684062957763672
+total_it: 336 (ep 67, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5513430833816528
+y torch.Size([2, 2])
+loss_G 18.864845275878906
+total_it: 337 (ep 67, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.6445080041885376
+y torch.Size([2, 2])
+loss_G 18.070960998535156
+total_it: 338 (ep 67, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.591856598854065
+y torch.Size([2, 2])
+loss_G 17.924678802490234
+total_it: 339 (ep 67, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.7372400760650635
+y torch.Size([2, 2])
+loss_G 23.920873641967773
+total_it: 340 (ep 68, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5486527681350708
+y torch.Size([2, 2])
+loss_G 15.865812301635742
+total_it: 341 (ep 68, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5447181463241577
+y torch.Size([2, 2])
+loss_G 19.941408157348633
+total_it: 342 (ep 68, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5440208911895752
+y torch.Size([2, 2])
+loss_G 24.754114151000977
+total_it: 343 (ep 68, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.598206639289856
+y torch.Size([2, 2])
+loss_G 24.278703689575195
+total_it: 344 (ep 68, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.618310809135437
+y torch.Size([2, 2])
+loss_G 21.89864158630371
+total_it: 345 (ep 69, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5752055644989014
+y torch.Size([2, 2])
+loss_G 24.057315826416016
+total_it: 346 (ep 69, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5456329584121704
+y torch.Size([2, 2])
+loss_G 21.081619262695312
+total_it: 347 (ep 69, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5894153118133545
+y torch.Size([2, 2])
+loss_G 19.13498878479004
+total_it: 348 (ep 69, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5441701412200928
+y torch.Size([2, 2])
+loss_G 18.81654167175293
+total_it: 349 (ep 69, it 4), lr 0.000100
+--- save the model @ ep 69 ---
+y torch.Size([2, 2])
+loss_D 1.9336285591125488
+y torch.Size([2, 2])
+loss_G 16.592273712158203
+total_it: 350 (ep 70, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5640840530395508
+y torch.Size([2, 2])
+loss_G 16.529129028320312
+total_it: 351 (ep 70, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.542311191558838
+y torch.Size([2, 2])
+loss_G 19.243560791015625
+total_it: 352 (ep 70, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5452922582626343
+y torch.Size([2, 2])
+loss_G 17.30947494506836
+total_it: 353 (ep 70, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 8.98204231262207
+y torch.Size([2, 2])
+loss_G 19.376874923706055
+total_it: 354 (ep 70, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5418599843978882
+y torch.Size([2, 2])
+loss_G 12.582409858703613
+total_it: 355 (ep 71, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5418437719345093
+y torch.Size([2, 2])
+loss_G 12.454999923706055
+total_it: 356 (ep 71, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.054779529571533
+y torch.Size([2, 2])
+loss_G 15.787168502807617
+total_it: 357 (ep 71, it 2), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5591936111450195
+y torch.Size([2, 2])
+loss_G 13.785879135131836
+total_it: 358 (ep 71, it 3), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.8479461669921875
+y torch.Size([2, 2])
+loss_G 18.16428565979004
+total_it: 359 (ep 71, it 4), lr 0.000100
+y torch.Size([2, 2])
+loss_D 9.6857328414917
+y torch.Size([2, 2])
+loss_G 19.19010353088379
+total_it: 360 (ep 72, it 0), lr 0.000100
+y torch.Size([2, 2])
+loss_D 1.5491634607315063
+y torch.Size([2, 2])
+loss_G 21.970359802246094
+total_it: 361 (ep 72, it 1), lr 0.000100
+y torch.Size([2, 2])
+loss_D 2.293074131011963
