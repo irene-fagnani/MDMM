@@ -240,6 +240,8 @@ class LossFunctions:
       # print(f"Type of 'real': {type(real)}")
       # print(f"Type of 'predicted': {type(predicted)}")
       # print("valore predicted",predicted)
+      print("real",real.size())
+      print("predicted",predicted.size())
       if rec_type == 'mse':
         loss = (real - predicted).pow(2)
       elif rec_type == 'bce':
