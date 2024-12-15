@@ -289,6 +289,10 @@ class LossFunctions:
          output: (array/float) depending on average parameters the result will be the mean
                                 of all the sample losses or an array with the losses per sample
       """
+      
+      # Reshape or broadcast prior tensors to match the inference model tensors
+      z_mu_prior = z_mu_prior.view(z_mu.size())  # Or use expand for broadcasting
+      z_var_prior = z_var_prior.view(z_var.size())  # Or use expand for broadcasting
       print("z",z.size())
       print("z_mu",z_mu.size())
       print("z_var",z_var.size())
