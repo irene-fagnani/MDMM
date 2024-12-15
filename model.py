@@ -555,7 +555,7 @@ class MD_multi(nn.Module):
     #print("data type",type(data))
     print("data shape",len(data))
     print("data_recon shape",len(data_recon))
-    loss_rec = loss_functions.reconstruction_loss(data, data_recon, self.opts.rec_type) 
+    loss_rec = loss_functions.reconstruction_loss(data, data_recon) 
     # gaussian loss
     loss_gauss = loss_functions.gaussian_loss(z, mu, var, y_mu, y_var)
     # categorical loss
