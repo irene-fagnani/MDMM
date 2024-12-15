@@ -241,11 +241,12 @@ class LossFunctions:
       # print(f"Type of 'predicted': {type(predicted)}")
       # print("valore predicted",predicted)
       print("real",real.size())
-      print("predicted",predicted.size())
+      predicted_flatten=predicted.view( 2,-1)
+      print("predicted_flatten",predicted_flatten.size())
       if rec_type == 'mse':
-        loss = (real - predicted).pow(2)
+        loss = (real - predicted_flatten).pow(2)
       elif rec_type == 'bce':
-        loss = F.binary_cross_entropy(predicted, real, reduction='none')
+        loss = F.binary_cross_entropy(predicted_flatten, real, reduction='none')
       else:
         raise "invalid loss function... try bce or mse..."
       return loss.sum(-1).mean()
