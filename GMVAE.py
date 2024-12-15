@@ -289,6 +289,11 @@ class LossFunctions:
          output: (array/float) depending on average parameters the result will be the mean
                                 of all the sample losses or an array with the losses per sample
       """
+      print("z",z.size())
+      print("z_mu",z_mu.size())
+      print("z_var",z_var.size())
+      print("z_mu_prior",z_mu_prior.size())
+      print("z_var_prior",z_var_prior.size())
       loss = self.log_normal(z, z_mu, z_var) - self.log_normal(z, z_mu_prior, z_var_prior)
       return loss.mean()
 
