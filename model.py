@@ -41,6 +41,7 @@ class MD_multi(nn.Module):
     self.disContent_opt = torch.optim.Adam(self.disContent.parameters(), lr=lr_dcontent, betas=(0.5, 0.999), weight_decay=0.0001)
     self.inf=dict()
     self.infA=dict()
+    self.infB=dict()
 
     self.cls_loss = nn.BCEWithLogitsLoss()
 
@@ -169,9 +170,9 @@ class MD_multi(nn.Module):
     #print("y",y.size())
     #print("y",y.size())
     self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA,y)
-    infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,y)
+    self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,y)
     output_fakeA=self.infA['x_rec']
-    output_fakeB=infB['x_rec']
+    output_fakeB=self.infB['x_rec']
     #print("dim",output_fakeA.size())
     self.fake_A_encoded, self.fake_AA_encoded, self.fake_A_random = torch.split(output_fakeA, self.z_content_a.size(0), dim=0)
     self.fake_B_encoded, self.fake_BB_encoded, self.fake_B_random = torch.split(output_fakeB, self.z_content_a.size(0), dim=0)
@@ -198,8 +199,8 @@ class MD_multi(nn.Module):
     # second cross translation
     self.infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A,y)
     self.fake_A_recon=self.infA['x_rec']
-    infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B,y)
-    self.fake_B_recon =infB['x_rec']
+    self.infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B,y)
+    self.fake_B_recon =self.infB['x_rec']
 
     # for display
     self.image_display = torch.cat((self.real_A[0:1].detach().cpu(), self.fake_B_encoded[0:1].detach().cpu(), \
@@ -478,8 +479,22 @@ class MD_multi(nn.Module):
       #out_net= self.inf | self.infA
       #out_net={key: torch.stack([self.inf.get(key), self.infA.get(key)] )for key in self.inf.keys() | self.infA.keys()}
 
-      out_net = {key: (torch.cat((self.inf[key], self.infA[key]), dim=0) if key in self.inf and key in self.infA
-                else self.inf.get(key, self.infA.get(key))) for key in self.inf.keys() | self.infA.keys()}
+      #out_net = {key: (torch.cat((self.inf[key], self.infA[key]), dim=0) if key in self.inf and key in self.infA
+      #          else self.inf.get(key, self.infA.get(key))) for key in self.inf.keys() | self.infA.keys()}
+      
+      out_net = {
+        key: (
+        # Combine tensors if the key exists in all three dictionaries
+        torch.cat(
+            tuple(d[key] for d in [self.inf, self.infA, self.infB] if key in d), 
+            dim=0
+        )
+        if sum(key in d for d in [self.inf, self.infA, self.infB]) > 1
+        else next((d[key] for d in [self.inf, self.infA, self.infB] if key in d), None)
+        )
+        for key in self.inf.keys() | self.infA.keys() | self.infB.keys()
+        }
+
 
       print("out_net type",out_net)  
       print("inf",len(self.inf))
@@ -540,7 +555,7 @@ class MD_multi(nn.Module):
     #print("data type",type(data))
     print("data shape",len(data))
     print("data_recon shape",len(data_recon))
-    loss_rec = loss_functions.reconstruction_loss(data, data_recon, self.opts.rec_type) # data: tensore, data_recon: stringa
+    loss_rec = loss_functions.reconstruction_loss(data, data_recon, self.opts.rec_type) 
     # gaussian loss
     loss_gauss = loss_functions.gaussian_loss(z, mu, var, y_mu, y_var)
     # categorical loss
