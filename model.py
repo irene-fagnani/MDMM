@@ -476,6 +476,8 @@ class MD_multi(nn.Module):
       # forward call
       #out_net = self.network(data, self.gumbel_temp, self.opts.hard_gumbel) # GUARDA QUI_: network genera un out_net che ha in x_recon stringhe
       out_net= self.inf | self.infA
+      print("inf",len(self.inf))
+      print("infA",len(self.infA))
       #print("on",out_net)
       unlab_loss_dic = self.unlabeled_loss(data, out_net)
       total = unlab_loss_dic['total']
