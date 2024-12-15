@@ -477,7 +477,7 @@ class MD_multi(nn.Module):
       #out_net = self.network(data, self.gumbel_temp, self.opts.hard_gumbel) # GUARDA QUI_: network genera un out_net che ha in x_recon stringhe
       #out_net= self.inf | self.infA
       out_net={key: [self.inf.get(key), self.infA.get(key)] for key in self.inf.keys() | self.infA.keys()}
-      print("out_net type",out_net.type)  
+      print("out_net type",out_net)  
       print("inf",len(self.inf))
       print("infA",len(self.infA))
       #print("on",out_net)
@@ -528,14 +528,14 @@ class MD_multi(nn.Module):
     #print("prima",type(out_net['x_rec']))
     z, data_recon = out_net['gaussian'], out_net['x_rec']
     logits, prob_cat = out_net['logits'], out_net['prob_cat']
-    print(f"logits shape: {logits.shape}, batch size: {data.shape[0]}")
+    #print(f"logits shape: {logits.shape}, batch size: {data.shape[0]}")
     y_mu, y_var = out_net['y_mean'], out_net['y_var']
     mu, var = out_net['mean'], out_net['var']
     # reconstruction loss
     #print("dopo",type(data_recon))
     #print("data type",type(data))
-    print("data shape",data.shape)
-    print("data_recon shape",data_recon.shape)
+    print("data shape",len(data))
+    print("data_recon shape",len(data_recon))
     loss_rec = loss_functions.reconstruction_loss(data, data_recon) # data: tensore, data_recon: stringa
     # gaussian loss
     loss_gauss = loss_functions.gaussian_loss(z, mu, var, y_mu, y_var)
