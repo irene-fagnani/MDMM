@@ -476,7 +476,11 @@ class MD_multi(nn.Module):
       # forward call
       #out_net = self.network(data, self.gumbel_temp, self.opts.hard_gumbel) # GUARDA QUI_: network genera un out_net che ha in x_recon stringhe
       #out_net= self.inf | self.infA
-      out_net={key: torch.stack([self.inf.get(key), self.infA.get(key)] )for key in self.inf.keys() | self.infA.keys()}
+      #out_net={key: torch.stack([self.inf.get(key), self.infA.get(key)] )for key in self.inf.keys() | self.infA.keys()}
+
+      out_net = {key: (torch.cat((self.inf[key], self.infA[key]), dim=0) if key in self.inf and key in self.infA
+                else self.inf.get(key, self.infA.get(key))) for key in self.inf.keys() | self.infA.keys()}
+
       print("out_net type",out_net)  
       print("inf",len(self.inf))
       print("infA",len(self.infA))
