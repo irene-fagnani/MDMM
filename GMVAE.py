@@ -243,9 +243,9 @@ class LossFunctions:
       print("real",real.size())
       predicted_flatten=predicted.view( 2,-1)
       print("predicted_flatten",predicted_flatten.size())
-      print("predicted_flatten device:", predicted_flatten.device)
-      print("real device:", real.device)
-
+      #print("predicted_flatten device:", predicted_flatten.device)
+      #print("real device:", real.device)
+      predicted_flatten = predicted_flatten.to(real.device)
       if rec_type == 'mse':
         loss = (real - predicted_flatten).pow(2)
       elif rec_type == 'bce':
