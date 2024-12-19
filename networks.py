@@ -144,7 +144,7 @@ class MD_G_multi_concat(nn.Module):
     self.dec2 = nn.Sequential(*dec2)
     self.dec3 = nn.Sequential(*dec3)
     self.dec4 = nn.Sequential(*dec4)
-    self.generative_net = GMVAE.GenerativeNet(crop_size, crop_size, c_dim)#x_dim, z_dim, y_dim
+    self.generative_net = GMVAE.GenerativeNet(crop_size, z_dim, c_dim)#x_dim, z_dim, y_dim
 
   def sample_z(self, y):
       # Ottieni i parametri della distribuzione di z condizionata su y usando GenerativeNet
