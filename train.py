@@ -105,7 +105,7 @@ def main():
         break
       
     #print("train_loader shape: ",train_loader)
-    losses_graph["train_loss"], losses_graph["train_rec"], losses_graph["train_gauss"], losses_graph["train_cat"], losses_graph["train_acc"], losses_graph["train_nmi"] = model.train_epoch_GMVAE(optimizer, train_loader)
+    #losses_graph["train_loss"], losses_graph["train_rec"], losses_graph["train_gauss"], losses_graph["train_cat"], losses_graph["train_acc"], losses_graph["train_nmi"] = model.train_epoch_GMVAE(optimizer, train_loader)
     if ep>=1:
       model.gumbel_temp = np.maximum(opts.init_temp * np.exp(-opts.decay_temp_rate * ep), opts.min_temp)
     # decay learning rate
