@@ -317,7 +317,7 @@ class MD_multi(nn.Module):
       loss=GMVAE.LossFunctions()
       loss_kl_za_a = loss.gaussian_loss(self.z_attr, self.mu, self.logvar, self.infA["y_mean"], self.infA["y_var"])
       loss_kl_za_b = loss.gaussian_loss(self.z_attr, self.mu, self.logvar, self.infB["y_mean"], self.infB["y_var"])
-      loss_kl_za=loss_kl_za_a+loss_kl_za_b
+      loss_kl_za=(loss_kl_za_a+loss_kl_za_b)*0.01
     else:
       loss_kl_za = self._l2_regularize(self.z_attr) * 0.01
 
