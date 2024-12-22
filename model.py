@@ -158,8 +158,8 @@ class MD_multi(nn.Module):
     # first cross translation
     input_content_forA = torch.cat((self.z_content_b, self.z_content_a, self.z_content_b),0)
     input_content_forB = torch.cat((self.z_content_a, self.z_content_b, self.z_content_a),0)
-    #print("z_attra",self.z_attr_a.size())
-    #print("z_random",self.z_random.size())
+    print("z_attra",self.z_attr_a.size())
+    print("z_random",self.z_random.size())
     input_attr_forA = torch.cat((self.z_attr_a, self.z_attr_a, self.z_random),0)
     input_attr_forB = torch.cat((self.z_attr_b, self.z_attr_b, self.z_random),0)
     input_c_forA = torch.cat((c_org_A, c_org_A, c_org_A), 0)
