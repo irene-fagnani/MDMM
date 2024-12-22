@@ -111,9 +111,9 @@ class MD_multi(nn.Module):
 
   def test_forward_transfer(self, image, image_trg, c_trg,temperature=1.0,hard=0):
     self.z_content = self.enc_c.forward(image)
-    inf, infvar = self.enc_a.forward(self.image_trg, self.c_trg,temperature,hard)
-    self.mu=inf["mean"]
-    self.logvar=infvar['var'].log()
+    self.inf, self.infvar = self.enc_a.forward(self.image_trg, self.c_trg,temperature,hard)
+    self.mu=self.inf["mean"]
+    self.logvar=self.infvar['var'].log()
     #print("log",self.logvar)
     std = self.logvar.mul(0.5).exp_()
     eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
@@ -140,17 +140,28 @@ class MD_multi(nn.Module):
 
     # get encoded z_a
     if self.concat:
-      inf, infvar = self.enc_a.forward(self.real_img, self.c_org)
+      self.inf, self.infvar = self.enc_a.forward(self.real_img, self.c_org)
       #print("inf",inf)
+<<<<<<< HEAD
       self.mu=inf["mean"]
       self.logvar=infvar['var'].clamp(1e-5).log()
+=======
+      self.mu=self.inf["mean"]
+      self.logvar=self.infvar['var'].log()
+>>>>>>> cb6366b (add self in front of inf)
       #print("log",self.logvar.size())
       std = self.logvar.mul(0.5).exp_()
       eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
       #self.z_attr = eps.mul(std).add_(self.mu)
+<<<<<<< HEAD
       self.z_attr=inf["gaussian"]
       self.y=inf["categorical"]
       #print("y",self.y.size())
+=======
+      self.z_attr=self.inf["gaussian"]
+      self.y=self.inf["categorical"]
+      print("y",self.y.size())
+>>>>>>> cb6366b (add self in front of inf)
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
     self.z_attr_a, self.z_attr_b = torch.split(self.z_attr, half_size, dim=0)
@@ -190,13 +201,13 @@ class MD_multi(nn.Module):
     # get reconstructed encoded z_a
     if self.concat:
       self.inf, infvar = self.enc_a.forward(self.fake_encoded_img, self.c_org)
-      self.mu_recon=inf["mean"]
+      self.mu_recon=self.inf["mean"]
       self.logvar_recon=infvar['var'].log()
       std_recon = self.logvar_recon.mul(0.5).exp_()
       eps_recon = self.get_z_random(std_recon.size(0), std_recon.size(1), 'gauss')
       #self.z_attr_recon = eps_recon.mul(std_recon).add_(self.mu_recon)
-      self.z_attr_recon=inf["gaussian"]
-      self.y=inf["categorical"]
+      self.z_attr_recon=self.inf["gaussian"]
+      self.y=self.inf["categorical"]
     else:
       self.z_attr_recon = self.enc_a.forward(self.fake_encoded_img, self.c_org)
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
@@ -216,8 +227,8 @@ class MD_multi(nn.Module):
     # for latent regression
     self.fake_random_img = torch.cat((self.fake_A_random, self.fake_B_random), 0)
     if self.concat:
-      inf, _= self.enc_a.forward(self.fake_random_img, self.c_org)
-      self.mu2=inf['mean']
+      self.inf, _= self.enc_a.forward(self.fake_random_img, self.c_org)
+      self.mu2=self.inf['mean']
       self.mu2_a, self.mu2_b = torch.split(self.mu2, half_size, 0)
     else:
       self.z_attr_random = self.enc_a.forward(self.fake_random_img, self.c_org)
