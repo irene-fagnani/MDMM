@@ -140,7 +140,7 @@ class MD_multi(nn.Module):
 
     # get encoded z_a
     if self.concat:
-      self.inf, self.infvar = self.enc_a.forward(self.real_img, self.c_org)
+      self.inf, infvar = self.enc_a.forward(self.real_img, self.c_org)
       #print("inf",inf)
       self.mu=self.inf["mean"]
       self.logvar=infvar['var'].clamp(1e-5).log()
