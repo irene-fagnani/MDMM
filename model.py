@@ -143,14 +143,14 @@ class MD_multi(nn.Module):
       inf, infvar = self.enc_a.forward(self.real_img, self.c_org)
       #print("inf",inf)
       self.mu=inf["mean"]
-      self.logvar=infvar['var'].log()
+      self.logvar=infvar['var'].clamp(1e-5).log()
       #print("log",self.logvar.size())
       std = self.logvar.mul(0.5).exp_()
       eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
       #self.z_attr = eps.mul(std).add_(self.mu)
       self.z_attr=inf["gaussian"]
       self.y=inf["categorical"]
-      print("y",self.y.size())
+      #print("y",self.y.size())
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
     self.z_attr_a, self.z_attr_b = torch.split(self.z_attr, half_size, dim=0)
@@ -160,8 +160,8 @@ class MD_multi(nn.Module):
     # first cross translation
     input_content_forA = torch.cat((self.z_content_b, self.z_content_a, self.z_content_b),0)
     input_content_forB = torch.cat((self.z_content_a, self.z_content_b, self.z_content_a),0)
-    print("z_attra",self.z_attr_a.size())
-    print("z_random",self.z_random.size())
+    #print("z_attra",self.z_attr_a.size())
+    #print("z_random",self.z_random.size())
     input_attr_forA = torch.cat((self.z_attr_a, self.z_attr_a, self.z_random),0)
     input_attr_forB = torch.cat((self.z_attr_b, self.z_attr_b, self.z_random),0)
     input_c_forA = torch.cat((c_org_A, c_org_A, c_org_A), 0)
@@ -175,8 +175,11 @@ class MD_multi(nn.Module):
     self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,self.y)
     output_fakeA=self.infA['x_rec']
     output_fakeB=self.infB['x_rec']
-    #print("dim",output_fakeA.size())
+    print("dim",output_fakeA.size())
     self.fake_A_encoded, self.fake_AA_encoded, self.fake_A_random = torch.split(output_fakeA, self.z_content_a.size(0), dim=0)
+    print("dim A_encoded",self.fake_A_encoded.size())
+    print("dim AA_encoded",self.fake_AA_encoded.size())
+    print("dim A_random",self.fake_A_random.size())
     self.fake_B_encoded, self.fake_BB_encoded, self.fake_B_random = torch.split(output_fakeB, self.z_content_a.size(0), dim=0)
 
     # get reconstructed encoded z_c
