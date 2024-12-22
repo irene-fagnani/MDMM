@@ -152,7 +152,7 @@ class MD_multi(nn.Module):
       self.y=self.inf["categorical"]
       #print("y",self.y.size())
       logits = self.inf['logits']
-      _, predicted_labels = torch.max(logits, dim=1)
+      _, predicted_labels = logits
       print("predicted_labels",predicted_labels)
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
