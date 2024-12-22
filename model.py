@@ -151,6 +151,9 @@ class MD_multi(nn.Module):
       self.z_attr=self.inf["gaussian"]
       self.y=self.inf["categorical"]
       #print("y",self.y.size())
+      logits = self.inf['logits']
+      _, predicted_labels = torch.max(logits, dim=1)
+      print("predicted_labels",predicted_labels)
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
     self.z_attr_a, self.z_attr_b = torch.split(self.z_attr, half_size, dim=0)
@@ -175,11 +178,11 @@ class MD_multi(nn.Module):
     self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,self.y)
     output_fakeA=self.infA['x_rec']
     output_fakeB=self.infB['x_rec']
-    print("dim",output_fakeA.size())
+    #print("dim",output_fakeA.size())
     self.fake_A_encoded, self.fake_AA_encoded, self.fake_A_random = torch.split(output_fakeA, self.z_content_a.size(0), dim=0)
-    print("dim A_encoded",self.fake_A_encoded.size())
-    print("dim AA_encoded",self.fake_AA_encoded.size())
-    print("dim A_random",self.fake_A_random.size())
+    #print("dim A_encoded",self.fake_A_encoded.size())
+    #print("dim AA_encoded",self.fake_AA_encoded.size())
+    #print("dim A_random",self.fake_A_random.size())
     self.fake_B_encoded, self.fake_BB_encoded, self.fake_B_random = torch.split(output_fakeB, self.z_content_a.size(0), dim=0)
 
     # get reconstructed encoded z_c
@@ -466,7 +469,8 @@ class MD_multi(nn.Module):
     for (data,label) in data_loader:
     # Se le label vere non sono one-hot, ma indici, usa F.cross_entropy direttamente
       true_labels = label[1]
-      predicted_labels = self.y
+      logits = self.inf['logits']
+      _, predicted_labels = torch.max(logits, dim=1)
       if true_labels.dim() == 1:
           loss = F.cross_entropy(predicted_labels, true_labels)
       else:
