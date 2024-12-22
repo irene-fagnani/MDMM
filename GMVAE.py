@@ -240,9 +240,9 @@ class LossFunctions:
       # print(f"Type of 'real': {type(real)}")
       # print(f"Type of 'predicted': {type(predicted)}")
       # print("valore predicted",predicted)
-      print("real",real.size())
+      #print("real",real.size())
       predicted_flatten=predicted.view( 2,-1)
-      print("predicted_flatten",predicted_flatten.size())
+      #print("predicted_flatten",predicted_flatten.size())
       #print("predicted_flatten device:", predicted_flatten.device)
       #print("real device:", real.device)
       predicted_flatten = predicted_flatten.to(real.device)
@@ -289,11 +289,11 @@ class LossFunctions:
          output: (array/float) depending on average parameters the result will be the mean
                                 of all the sample losses or an array with the losses per sample
       """
-      print("z",z.size())
-      print("z_mu",z_mu.size())
-      print("z_var",z_var.size())
-      print("z_mu_prior",z_mu_prior.size())
-      print("z_var_prior",z_var_prior.size())
+      # print("z",z.size())
+      # print("z_mu",z_mu.size())
+      # print("z_var",z_var.size())
+      # print("z_mu_prior",z_mu_prior.size())
+      # print("z_var_prior",z_var_prior.size())
       loss = self.log_normal(z, z_mu, z_var) - self.log_normal(z, z_mu_prior, z_var_prior)
       return loss.mean()
 
