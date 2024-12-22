@@ -1,5 +1,6 @@
 import networks
 import torch
+import torch.nn.functional as F
 import torch.nn as nn
 import numpy as np
 import GMVAE
@@ -149,6 +150,7 @@ class MD_multi(nn.Module):
       #self.z_attr = eps.mul(std).add_(self.mu)
       self.z_attr=inf["gaussian"]
       self.y=inf["categorical"]
+      print("y",self.y.size())
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
     self.z_attr_a, self.z_attr_b = torch.split(self.z_attr, half_size, dim=0)
@@ -449,6 +451,26 @@ class MD_multi(nn.Module):
   ### GMVAE LOSSES ###
   
   
+
+
+  def label_similarity_loss(self,data_loader):
+    """
+    Calcola la cross-entropy loss tra le label predette e quelle vere.
+    :param predicted_labels: Tensor delle probabilità predette (softmax output)
+    :param true_labels: Tensor delle label vere (one-hot encoded o indici)
+    :return: Loss value
+    """
+    for (data,label) in data_loader:
+    # Se le label vere non sono one-hot, ma indici, usa F.cross_entropy direttamente
+      true_labels = label[1]
+      predicted_labels = self.y
+      if true_labels.dim() == 1:
+          loss = F.cross_entropy(predicted_labels, true_labels)
+      else:
+          # Altrimenti, se sono one-hot
+          loss = -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
+    return loss
+
   def train_epoch_GMVAE(self, optimizer, data_loader):
     """Train the model for one epoch
     Args:
