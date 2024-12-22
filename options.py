@@ -43,7 +43,7 @@ class TrainOptions():
 
     #GMVAE parameters
     self.parser.add_argument('--num_classes', type=int, default=2, help='number of classes (default: 2)')
-    self.parser.add_argument('--gaussian_size', default=64, type=int, help='gaussian size (default: 64) (z_dim)')
+    self.parser.add_argument('--gaussian_size', default=216, type=int, help='gaussian size (default: 64) (z_dim)')
     self.parser.add_argument('--x_dim', default=139968, type=int, help='input size (default: 2916) (2916=3*216*3*3)')
     
     ## Gumbel parameters
