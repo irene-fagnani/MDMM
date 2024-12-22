@@ -345,7 +345,8 @@ class MD_multi(nn.Module):
 
   def backward_G_alone(self):
     # Ladv for generator
-    pred_fake, pred_fake_cls = self.dis2.forward(self.fake_random_img)
+    #pred_fake, pred_fake_cls = self.dis2.forward(self.fake_random_img)
+    pred_fake, pred_fake_cls = self.dis2.forward(self.y)
 
     loss_G_GAN2 = 0
     for out_a in pred_fake:
