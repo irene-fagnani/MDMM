@@ -148,7 +148,7 @@ class MD_multi(nn.Module):
       eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
       #self.z_attr = eps.mul(std).add_(self.mu)
       self.z_attr=inf["gaussian"]
-      y=inf["categorical"]
+      self.y=inf["categorical"]
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
     self.z_attr_a, self.z_attr_b = torch.split(self.z_attr, half_size, dim=0)
@@ -169,8 +169,8 @@ class MD_multi(nn.Module):
     #print("c",input_c_forA.size())
     #print("y",y.size())
     #print("y",y.size())
-    self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA,y)
-    self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,y)
+    self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA,self.y)
+    self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,self.y)
     output_fakeA=self.infA['x_rec']
     output_fakeB=self.infB['x_rec']
     #print("dim",output_fakeA.size())
@@ -191,15 +191,15 @@ class MD_multi(nn.Module):
       eps_recon = self.get_z_random(std_recon.size(0), std_recon.size(1), 'gauss')
       #self.z_attr_recon = eps_recon.mul(std_recon).add_(self.mu_recon)
       self.z_attr_recon=inf["gaussian"]
-      y=inf["categorical"]
+      self.y=inf["categorical"]
     else:
       self.z_attr_recon = self.enc_a.forward(self.fake_encoded_img, self.c_org)
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
 
     # second cross translation
-    self.infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A,y)
+    self.infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A,self.y)
     self.fake_A_recon=self.infA['x_rec']
-    self.infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B,y)
+    self.infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B,self.y)
     self.fake_B_recon =self.infB['x_rec']
 
     # for display
@@ -346,6 +346,7 @@ class MD_multi(nn.Module):
   def backward_G_alone(self):
     # Ladv for generator
     pred_fake, pred_fake_cls = self.dis2.forward(self.fake_random_img)
+
     loss_G_GAN2 = 0
     for out_a in pred_fake:
       outputs_fake = nn.functional.sigmoid(out_a)
@@ -353,7 +354,7 @@ class MD_multi(nn.Module):
       all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
       #all_ones = torch.ones_like(outputs_fake).cpu()
       loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
-
+    
     # classification
     loss_G_cls2 = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
 
