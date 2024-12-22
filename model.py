@@ -142,26 +142,15 @@ class MD_multi(nn.Module):
     if self.concat:
       self.inf, self.infvar = self.enc_a.forward(self.real_img, self.c_org)
       #print("inf",inf)
-<<<<<<< HEAD
-      self.mu=inf["mean"]
-      self.logvar=infvar['var'].clamp(1e-5).log()
-=======
       self.mu=self.inf["mean"]
-      self.logvar=self.infvar['var'].log()
->>>>>>> cb6366b (add self in front of inf)
+      self.logvar=infvar['var'].clamp(1e-5).log()
       #print("log",self.logvar.size())
       std = self.logvar.mul(0.5).exp_()
       eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
       #self.z_attr = eps.mul(std).add_(self.mu)
-<<<<<<< HEAD
-      self.z_attr=inf["gaussian"]
-      self.y=inf["categorical"]
-      #print("y",self.y.size())
-=======
       self.z_attr=self.inf["gaussian"]
       self.y=self.inf["categorical"]
-      print("y",self.y.size())
->>>>>>> cb6366b (add self in front of inf)
+      #print("y",self.y.size())
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
     self.z_attr_a, self.z_attr_b = torch.split(self.z_attr, half_size, dim=0)
