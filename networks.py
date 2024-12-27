@@ -87,8 +87,8 @@ class MD_E_attr_concat(nn.Module):
     x_c = torch.cat([x, c], dim=1)
     x_conv = self.conv(x_c)
     conv_flat = x_conv.view(x.size(0), -1)
-    output = self.fc(conv_flat)
-    outputVar = self.fcVar(conv_flat)
+    output = F.softplus(self.fc(conv_flat))
+    outputVar = F.softplus(self.fcVar(conv_flat))
     inference_output = self.inference_net(output, temperature, hard)
     inference_outputVar = self.inference_net(outputVar, temperature, hard)
     return inference_output, inference_outputVar
