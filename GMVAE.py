@@ -270,6 +270,8 @@ class LossFunctions:
       """
       if self.eps > 0.0:
         var = var + self.eps
+        print("log_normal: ", -0.5 * torch.sum(
+        np.log(2.0 * np.pi) + torch.log(var) + torch.pow(x - mu, 2) / var, dim=-1))
       return -0.5 * torch.sum(
         np.log(2.0 * np.pi) + torch.log(var) + torch.pow(x - mu, 2) / var, dim=-1)
 
@@ -289,12 +291,13 @@ class LossFunctions:
          output: (array/float) depending on average parameters the result will be the mean
                                 of all the sample losses or an array with the losses per sample
       """
-      # print("z",z.size())
-      # print("z_mu",z_mu.size())
-      # print("z_var",z_var.size())
-      # print("z_mu_prior",z_mu_prior.size())
-      # print("z_var_prior",z_var_prior.size())
+      print("z",z)
+      print("z_mu",z_mu)
+      print("z_var",z_var)
+      print("z_mu_prior",z_mu_prior)
+      print("z_var_prior",z_var_prior)
       loss = self.log_normal(z, z_mu, z_var) - self.log_normal(z, z_mu_prior, z_var_prior)
+      print("loss",loss.mean())
       return loss.mean()
 
 
