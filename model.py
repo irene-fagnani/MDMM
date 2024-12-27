@@ -367,7 +367,7 @@ class MD_multi(nn.Module):
     else:
       loss_kl_za = self._l2_regularize(self.z_attr) * 0.01
 
-
+    print("loss_kl_za",loss_kl_za)
     loss_G = loss_G_GAN + loss_G_cls + loss_G_L1_self + loss_G_L1_cc + loss_kl_zc + loss_kl_za
     if self.opts.isDcontent:
       loss_G += loss_G_GAN_content
@@ -402,7 +402,7 @@ class MD_multi(nn.Module):
     #   loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
     
     loss_G_GAN2 = self.label_similarity_loss(self.train)*10
-    
+    print("loss_G_GAN2",loss_G_GAN2)
     # classification
     loss_G_cls2 = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
 

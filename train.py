@@ -86,7 +86,7 @@ def main():
           # print("loss_D", model.loss_D)
           model.update_EG()
           losses_graph["loss_G"].append(model.loss_G)
-          # print("loss_G", model.loss_G)
+          #print("loss_G", model.loss_G)
       else:
         model.update_D(images, c_org)
         losses_graph["loss_D"].append(model.loss_D)
