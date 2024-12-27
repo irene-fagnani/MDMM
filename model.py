@@ -154,7 +154,7 @@ class MD_multi(nn.Module):
       #print("y",self.y.size())
       logits = self.inf['logits']
       _, predicted_labels = torch.max(logits, dim=1)
-      print("predicted_labels",predicted_labels)
+      #print("predicted_labels",predicted_labels)
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
     self.z_attr_a, self.z_attr_b = torch.split(self.z_attr, half_size, dim=0)
