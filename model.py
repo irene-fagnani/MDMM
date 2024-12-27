@@ -483,6 +483,7 @@ class MD_multi(nn.Module):
       true_labels = label[1]
       logits = self.inf['logits']
       _, predicted_labels = torch.max(logits, dim=1)
+      predicted_labels=predicted_labels.float()
       if true_labels.dim() == 1:
           loss = F.cross_entropy(predicted_labels, true_labels)
       else:
