@@ -270,8 +270,7 @@ class LossFunctions:
       """
       if self.eps > 0.0:
         var = var + self.eps
-        print("log_normal: ", -0.5 * torch.sum(
-        np.log(2.0 * np.pi) + torch.log(var) + torch.pow(x - mu, 2) / var, dim=-1))
+        var=F.softplus(var)
       return -0.5 * torch.sum(
         np.log(2.0 * np.pi) + torch.log(var) + torch.pow(x - mu, 2) / var, dim=-1)
 
