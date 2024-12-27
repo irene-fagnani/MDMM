@@ -8,12 +8,13 @@ torch.autograd.set_detect_anomaly(True)
 
 
 class MD_multi(nn.Module):
-  def __init__(self, opts):
+  def __init__(self, opts,data):
     super(MD_multi, self).__init__()
     self.opts = opts
     lr = 0.0001
     lr_dcontent = lr/2.5 
     self.nz =216#64#8
+    self.train=data
 
     self.isDcontent = opts.isDcontent
     if opts.concat == 1:
@@ -355,13 +356,15 @@ class MD_multi(nn.Module):
     # Ladv for generator
     pred_fake, pred_fake_cls = self.dis2.forward(self.fake_random_img)
 
-    loss_G_GAN2 = 0
-    for out_a in pred_fake:
-      outputs_fake = nn.functional.sigmoid(out_a)
-      #NVIDIA
-      all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
-      #all_ones = torch.ones_like(outputs_fake).cpu()
-      loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
+    # loss_G_GAN2 = 0
+    # for out_a in pred_fake:
+    #   outputs_fake = nn.functional.sigmoid(out_a)
+    #   #NVIDIA
+    #   all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
+    #   #all_ones = torch.ones_like(outputs_fake).cpu()
+    #   loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
+    
+    loss_G_GAN2 = self.label_prediction_loss(self.train)
     
     # classification
     loss_G_cls2 = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
@@ -459,13 +462,22 @@ class MD_multi(nn.Module):
   
 
 
-  def label_similarity_loss(self,data_loader):
+  def label_similarity_loss(self,predicted_labels, true_labels):
     """
     Calcola la cross-entropy loss tra le label predette e quelle vere.
     :param predicted_labels: Tensor delle probabilità predette (softmax output)
     :param true_labels: Tensor delle label vere (one-hot encoded o indici)
     :return: Loss value
     """
+    # loss=0
+    # for pred in predicted_labels:
+    #   if true_labels.dim() == 1:
+    #       loss += F.cross_entropy(pred, true_labels)
+    #   else:
+    #       # Altrimenti, se sono one-hot
+    #       loss = -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
+    # return loss
+
     for (data,label) in data_loader:
     # Se le label vere non sono one-hot, ma indici, usa F.cross_entropy direttamente
       true_labels = label[1]

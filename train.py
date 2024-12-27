@@ -18,7 +18,7 @@ def main():
   print('\n--- load dataset ---')
   dataset = dataset_multi(opts)
   train_loader = torch.utils.data.DataLoader(dataset, batch_size=opts.batch_size, shuffle=True, num_workers=opts.nThreads)
-  print('train_loader', len(train_loader.dataset))
+  #print('train_loader', len(train_loader.dataset))
   # losses dictionary
   losses_graph = {
     "loss_D_content": [],
@@ -33,7 +33,7 @@ def main():
   }
   # model
   print('\n--- load model ---')
-  model = MD_multi(opts)
+  model = MD_multi(opts,train_loader)
   # NVIDIA
   model.setgpu(opts.gpu)
   if opts.resume is None:
