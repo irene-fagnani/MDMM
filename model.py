@@ -364,7 +364,7 @@ class MD_multi(nn.Module):
     #   #all_ones = torch.ones_like(outputs_fake).cpu()
     #   loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
     
-    loss_G_GAN2 = self.label_prediction_loss(self.train)
+    loss_G_GAN2 = self.label_similarity_loss(self.train)
     
     # classification
     loss_G_cls2 = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
