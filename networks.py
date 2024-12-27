@@ -172,7 +172,7 @@ class MD_G_multi_concat(nn.Module):
     z_img4 = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), out3.size(2), out3.size(3))
     x_and_z4 = torch.cat([out3, z_img4], 1)
     out4 = self.dec4(x_and_z4)
-    out4=self.generative_net(out4,y)
+    out4=self.generative_net(out4,c0)
     return out4
 
 class MD_G_multi(nn.Module):
