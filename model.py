@@ -94,7 +94,7 @@ class MD_multi(nn.Module):
 
   def get_z_random(self, batchSize, nz, random_type='gauss'):
     # NVIDIA
-    z = torch.randn(batchSize, nz,1,1).cuda(self.gpu) # remove 1,1
+    z = torch.randn(batchSize, nz).cuda(self.gpu) # remove 1,1
     #z = torch.randn(batchSize, nz).cpu()
     return z
 
