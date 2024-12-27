@@ -92,11 +92,48 @@ class MD_multi(nn.Module):
     # if self.isDcontent:
     #   self.disContent.cpu()
 
+  # def get_z_random(self, batchSize, nz, random_type='gauss'):
+  #   # NVIDIA
+  #   z = torch.randn(batchSize, nz).cuda(self.gpu) # remove 1,1
+  #   #z = torch.randn(batchSize, nz).cpu()
+  #   return z
+  
   def get_z_random(self, batchSize, nz, random_type='gauss'):
-    # NVIDIA
-    z = torch.randn(batchSize, nz).cuda(self.gpu) # remove 1,1
-    #z = torch.randn(batchSize, nz).cpu()
-    return z
+    """
+    Sample latent vectors from a mixture of Gaussian distributions.
+    :param batchSize: Number of samples.
+    :param nz: Dimensionality of the latent space.
+    :param random_type: Type of randomness ('gauss' or 'uniform').
+    :return: A batch of latent vectors sampled from the mixture.
+    """
+    num_components=self.opts.num_classes # number of gaussian components in the mixture equal to the number of classes
+    device = torch.device(f"cuda:{self.gpu}" if torch.cuda.is_available() else "cpu")
+    
+    if random_type == 'gauss':
+        # Mixture of Gaussians
+        # Define mixture weights (uniform for simplicity)
+        weights = torch.ones(num_components)/num_components
+        categorical = torch.distributions.Categorical(weights)
+
+        # Sample component indices for the batch
+        component_indices = categorical.sample((batchSize,)).to(device)
+
+        # Define means and standard deviations for each component
+        means = torch.randn(num_components, nz).to(device) * 2  # Centered around random points
+        stds = torch.ones(num_components, nz).to(device)  # Standard deviations of each Gaussian
+
+        # Create the latent vectors batch
+        z = torch.zeros(batchSize, nz).to(device)
+        for i in range(num_components):
+            mask = (component_indices == i).unsqueeze(1)  # Mask for samples from this component
+            z += mask * torch.normal(means[i], stds[i]).to(device)  # Sample from Gaussian i
+
+        return z
+
+    elif random_type == 'uniform':
+        return torch.rand(batchSize, nz).to(device) * 2 - 1  # Uniform in [-1, 1]
+    else:
+        raise ValueError(f"Unknown random_type {random_type}")
 
   def test_forward_random(self, image):
     self.z_content = self.enc_c.forward(image)
