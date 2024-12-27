@@ -462,7 +462,7 @@ class MD_multi(nn.Module):
   
 
 
-  def label_similarity_loss(self,predicted_labels, true_labels):
+  def label_similarity_loss(self,data_loader):
     """
     Calcola la cross-entropy loss tra le label predette e quelle vere.
     :param predicted_labels: Tensor delle probabilità predette (softmax output)
