@@ -151,7 +151,7 @@ class MD_multi(nn.Module):
     self.z_content = self.enc_c.forward(image)
     self.inf, self.infvar = self.enc_a.forward(self.image_trg, self.c_trg,temperature,hard)
     self.mu=self.inf["mean"]
-    self.logvar=self.infvar['var'].log()
+    self.logvar=self.infvar['var'].clamp(1e-5).log()
     #print("log",self.logvar)
     std = self.logvar.mul(0.5).exp_()
     eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
