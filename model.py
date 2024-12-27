@@ -364,7 +364,7 @@ class MD_multi(nn.Module):
     #   #all_ones = torch.ones_like(outputs_fake).cpu()
     #   loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
     
-    loss_G_GAN2 = self.label_similarity_loss(self.train)
+    loss_G_GAN2 = self.label_similarity_loss(self.train)*10
     
     # classification
     loss_G_cls2 = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
@@ -463,12 +463,6 @@ class MD_multi(nn.Module):
 
 
   def label_similarity_loss(self,data_loader):
-    """
-    Calcola la cross-entropy loss tra le label predette e quelle vere.
-    :param predicted_labels: Tensor delle probabilità predette (softmax output)
-    :param true_labels: Tensor delle label vere (one-hot encoded o indici)
-    :return: Loss value
-    """
     # loss=0
     # for pred in predicted_labels:
     #   if true_labels.dim() == 1:
