@@ -94,7 +94,7 @@ class MD_multi(nn.Module):
 
   def get_z_random(self, batchSize, nz, random_type='gauss'):
     # NVIDIA
-    z = torch.randn(batchSize, nz).cuda(self.gpu)
+    z = torch.randn(batchSize, nz,1,1).cuda(self.gpu) # remove 1,1
     #z = torch.randn(batchSize, nz).cpu()
     return z
 
@@ -481,7 +481,7 @@ class MD_multi(nn.Module):
       device = predicted_labels.device  # Get the device of predicted_labels
       true_labels = true_labels.to(device)  # Move true_labels to the same device
       if true_labels.dim() == 1:
-          loss += F.cross_entropy(predicted_labels, true_labels)
+          loss += F.cross_entropy(predicted_labels, true_labels, reduction="mean")
       else:
           # Altrimenti, se sono one-hot
           loss += -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
