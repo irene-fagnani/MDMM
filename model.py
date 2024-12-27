@@ -477,18 +477,20 @@ class MD_multi(nn.Module):
     #       # Altrimenti, se sono one-hot
     #       loss = -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
     # return loss
-
+    loss=0
     for (data,label) in data_loader:
     # Se le label vere non sono one-hot, ma indici, usa F.cross_entropy direttamente
       true_labels = label[1]
       logits = self.inf['logits']
       _, predicted_labels = torch.max(logits, dim=1)
       predicted_labels=predicted_labels.float()
+      device = predicted_labels.device  # Get the device of predicted_labels
+      true_labels = true_labels.to(device)  # Move true_labels to the same device
       if true_labels.dim() == 1:
-          loss = F.cross_entropy(predicted_labels, true_labels)
+          loss += F.cross_entropy(predicted_labels, true_labels)
       else:
           # Altrimenti, se sono one-hot
-          loss = -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
+          loss += -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
     return loss
 
   def train_epoch_GMVAE(self, optimizer, data_loader):
