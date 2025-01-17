@@ -61,7 +61,7 @@ class MD_E_attr(nn.Module):
     output = self.model(x_c)
     return output.view(output.size(0), -1)
 
-class MD_E_attr_concat(nn.Module):
+class old_MD_E_attr_concat(nn.Module):
   def __init__(self, input_dim,z_dim,y_dim, output_nc=8, c_dim=3, norm_layer=None, nl_layer=None):
     super(MD_E_attr_concat, self).__init__()
 
@@ -80,6 +80,7 @@ class MD_E_attr_concat(nn.Module):
     self.fcVar = nn.Sequential(*[nn.Linear(output_ndf, output_nc)])
     self.conv = nn.Sequential(*conv_layers)
     self.inference_net = GMVAE.InferenceNet(x_dim=output_nc, z_dim=z_dim, y_dim=y_dim)
+    
 
   def forward(self, x, c,temperature=1.0, hard=0):
     c = c.view(c.size(0), c.size(1), 1, 1)
@@ -92,6 +93,87 @@ class MD_E_attr_concat(nn.Module):
     inference_output = self.inference_net(output, temperature, hard)
     inference_outputVar = self.inference_net(outputVar, temperature, hard)
     return inference_output, inference_outputVar
+  
+class MD_E_attr_concat(nn.Module):
+  def __init__(self, input_dim,z_dim,y_dim, output_nc=8, c_dim=3, norm_layer=None, nl_layer=None):
+    super(MD_E_attr_concat, self).__init__()
+
+    ndf = 64
+    n_blocks=4
+    max_ndf = 4
+
+    conv_layers = [nn.ReflectionPad2d(1)]
+    conv_layers += [nn.Conv2d(input_dim+c_dim, ndf, kernel_size=4, stride=2, padding=0, bias=True)]
+    for n in range(1, n_blocks):
+      input_ndf = ndf * min(max_ndf, n)  # 2**(n-1)
+      output_ndf = ndf * min(max_ndf, n+1)  # 2**n
+      conv_layers += [BasicBlock(input_ndf, output_ndf, norm_layer, nl_layer)]
+    conv_layers += [nl_layer(), nn.AdaptiveAvgPool2d(1)] # AvgPool2d(13)
+    self.fc = nn.Sequential(*[nn.Linear(output_ndf, output_nc)])
+    self.fcVar = nn.Sequential(*[nn.Linear(output_ndf, output_nc)])
+    self.conv = nn.Sequential(*conv_layers)
+    # ci sono due reti neurali: una per q(y|x) e una per q(z|y,x)
+    # q(y|x)
+    #print("x_dim", x_dim, y_dim,z_dim)
+    self.inference_qyx = torch.nn.ModuleList([
+        nn.Linear(output_nc, 512),
+        nn.ReLU(),
+        nn.Linear(512, 512),
+        nn.ReLU(),
+        GMVAE.GumbelSoftmax(512, y_dim)
+    ])
+
+    # q(z|y,x)
+    self.inference_qzyx = torch.nn.ModuleList([
+        nn.Linear(output_nc + y_dim, 512),
+        nn.ReLU(),
+        nn.Linear(512, 512),
+        nn.ReLU(),
+        GMVAE.Gaussian(512, z_dim)
+    ])
+    
+  # q(y|x)
+  def qyx(self, x, temperature, hard):
+    #print("Entra in qyx")
+    num_layers = len(self.inference_qyx)
+    for i, layer in enumerate(self.inference_qyx):
+      if i == num_layers - 1:
+        #print("entra in if")
+        #last layer is gumbel softmax
+        x = layer(x, temperature, hard)
+      else:
+        #print("entra in else")
+        # print("x:", x)
+        # print("x dimension", x.shape)
+        #print("layer:", layer)
+        x=layer(x) # dimension of x: torch.Size([1, 746496])
+                    # layer is a torch linear object
+    #print("Esce da qyx")
+    return x
+  # funzione per calcolare q(y|x)
+
+  # q(z|x,y)
+  def qzxy(self, x, y):
+    concat = torch.cat((x, y), dim=1) # combina l'input di x e y
+    for layer in self.inference_qzyx:
+      concat = layer(concat)
+    return concat
+
+  def forward(self, x, c,temperature=1.0, hard=0):
+    c = c.view(c.size(0), c.size(1), 1, 1)
+    c = c.repeat(1, 1, x.size(2), x.size(3))
+    x_c = torch.cat([x, c], dim=1)
+    x_conv = self.conv(x_c)
+    conv_flat = x_conv.view(x.size(0), -1)
+    output = F.softplus(self.fc(conv_flat))
+    #outputVar = F.softplus(self.fcVar(conv_flat))
+    logits, prob, y = self.qyx(output, temperature, hard)
+    mu, var, z = self.qzxy(output, y)
+    output = {'mean': mu, 'var': var, 'gaussian': z,
+              'logits': logits, 'prob_cat': prob, 'categorical': y}
+    return output
+
+
 
 class MD_G_uni(nn.Module):
   def __init__(self, output_dim, c_dim=3):
