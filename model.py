@@ -238,6 +238,7 @@ class MD_multi(nn.Module):
       #self.z_attr_recon = eps_recon.mul(std_recon).add_(self.mu_recon)
       self.z_attr_recon=self.inf["gaussian"]
       self.y=self.inf["categorical"]
+      self.logits = self.inf['logits']
     else:
       self.z_attr_recon = self.enc_a.forward(self.fake_encoded_img, self.c_org)
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
@@ -512,7 +513,7 @@ class MD_multi(nn.Module):
     for (data,label) in data_loader:
     # Se le label vere non sono one-hot, ma indici, usa F.cross_entropy direttamente
       true_labels = label[1]
-      logits = self.inf['logits']
+      logits = self.logits
       _, predicted_labels = torch.max(logits, dim=1)
       predicted_labels=predicted_labels.float()
       device = predicted_labels.device  # Get the device of predicted_labels
