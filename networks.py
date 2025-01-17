@@ -120,7 +120,7 @@ class MD_E_attr_concat(nn.Module):
         nn.ReLU(),
         nn.Linear(512, 512),
         nn.ReLU(),
-        GMVAE.GumbelSoftmax(512, y_dim)
+        GMVAE.GumbelSoftmax(512, c_dim)
     ])
 
     # q(z|y,x)
@@ -201,7 +201,7 @@ class MD_G_uni(nn.Module):
     x_c = torch.cat([out0, c], dim=1)
     return self.dec(x_c)
 
-class MD_G_multi_concat(nn.Module):
+class old_MD_G_multi_concat(nn.Module):
   def __init__(self, output_dim,x_dim, z_dim, crop_size, c_dim=3, nz=8):
     super(MD_G_multi_concat, self).__init__()
     self.nz = nz
@@ -256,6 +256,94 @@ class MD_G_multi_concat(nn.Module):
     out4 = self.dec4(x_and_z4)
     out4=self.generative_net(out4,c0)
     return out4
+
+class MD_G_multi_concat(nn.Module):
+  def __init__(self, output_dim,x_dim, z_dim, crop_size, c_dim=3, nz=8):
+    super(MD_G_multi_concat, self).__init__()
+    self.nz = nz
+    self.c_dim = c_dim
+    tch = 256
+    dec_share = []
+    dec_share += [INSResBlock(tch, tch)]
+    self.dec_share = nn.Sequential(*dec_share)
+    tch = 256+self.nz+self.c_dim
+    dec1 = []
+    for i in range(0, 3):
+      dec1 += [INSResBlock(tch, tch)]
+    tch = tch + self.nz
+    dec2 = [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1)]
+    tch = tch//2
+    tch = tch + self.nz
+    dec3 = [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1)]
+    tch = tch//2
+    tch = tch + self.nz
+    dec4 = [nn.ConvTranspose2d(tch, output_dim, kernel_size=1, stride=1, padding=0)]+[nn.Tanh()]
+    self.dec1 = nn.Sequential(*dec1)
+    self.dec2 = nn.Sequential(*dec2)
+    self.dec3 = nn.Sequential(*dec3)
+    self.dec4 = nn.Sequential(*dec4)
+    #self.generative_net = GMVAE.GenerativeNet(crop_size, z_dim, c_dim)#x_dim, z_dim, y_dim
+        # p(z|y)
+    self.y_mu = nn.Linear(c_dim, z_dim)#y_dim, z_dim
+    self.y_var = nn.Linear(c_dim, z_dim)#
+    # p(x|z) genera x dato z
+    self.generative_pxz = torch.nn.ModuleList([
+        nn.Linear(z_dim, 512),
+        nn.ReLU(),
+        nn.Linear(512, 512),
+        nn.ReLU(),
+        nn.Linear(512, x_dim),
+        torch.nn.Sigmoid() # garantisce che l'output sia compreso tra 0 e 1
+    ])
+  def sample_z(self, y):
+      # Ottieni i parametri della distribuzione di z condizionata su y usando GenerativeNet
+      y_mu, y_var = self.generative_net.pzy(y)
+      # Campiona z da una distribuzione normale con media y_mu e varianza y_var
+      z = y_mu + torch.sqrt(y_var) * torch.randn_like(y_var)
+      return z
+
+  # p(z|y)
+  def pzy(self, y):
+    #print("y",y.size())
+    y_mu = self.y_mu(y)
+    y_var = F.softplus(self.y_var(y)) # garantisce che la varianza sia sempre positiva
+    return y_mu, y_var
+
+  # p(x|z)
+  def pxz(self, z):
+    for layer in self.generative_pxz:
+      z = layer(z)
+    return z
+
+  def forward(self, x, z, c, y): #content,attr,c
+    #z=self.sample_z(y)
+    c0 = c
+    out0 = self.dec_share(x)
+    z_img = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), x.size(2), x.size(3))
+    c = c.view(c.size(0), c.size(1), 1, 1)
+    c = c.repeat(1, 1, out0.size(2), out0.size(3))
+    print("dim out0: ", out0.size())
+    print("dim c: ", c.size())
+    print("dim z_img: ", z_img.size())
+    x_c_z = torch.cat([out0, c, z_img], 1)
+    #print("size xcz",x_c_z.size())
+    out1 = self.dec1(x_c_z)
+    z_img2 = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), out1.size(2), out1.size(3))
+    x_and_z2 = torch.cat([out1, z_img2], 1)
+    out2 = self.dec2(x_and_z2)
+    z_img3 = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), out2.size(2), out2.size(3))
+    x_and_z3 = torch.cat([out2, z_img3], 1)
+    out3 = self.dec3(x_and_z3)
+    z_img4 = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), out3.size(2), out3.size(3))
+    x_and_z4 = torch.cat([out3, z_img4], 1)
+    out4 = self.dec4(x_and_z4)
+    y_mu, y_var = self.pzy(y)
+
+    # p(x|z)
+    x_rec = self.pxz(out4)
+
+    output = {'y_mean': y_mu, 'y_var': y_var, 'x_rec': x_rec}
+    return output
 
 class MD_G_multi(nn.Module):
   def __init__(self, output_dim, c_dim=3, nz=8):

@@ -191,7 +191,7 @@ class MD_multi(nn.Module):
       #self.z_attr = eps.mul(std).add_(self.mu)
       self.z_attr=self.inf["gaussian"]
       self.y=self.inf["categorical"]
-      #print("y",self.y.size())
+      print("y",self.y.size())
       logits = self.inf['logits']
       _, predicted_labels = torch.max(logits, dim=1)
       #print("predicted_labels",predicted_labels)
@@ -212,11 +212,11 @@ class MD_multi(nn.Module):
     input_c_forB = torch.cat((c_org_B, c_org_B, c_org_B), 0)
     #print("content",input_content_forA.size())
     #print("attr",input_attr_forA.size())
-    #print("c",input_c_forA.size())
+    print("c",input_c_forA.size())
     #print("y",y.size())
     #print("y",y.size())
-    self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA,self.y)
-    self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB,self.y)
+    self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA, self.y)
+    self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB, self.y)
     output_fakeA=self.infA['x_rec']
     output_fakeB=self.infB['x_rec']
     #print("dim",output_fakeA.size())
@@ -247,9 +247,9 @@ class MD_multi(nn.Module):
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
 
     # second cross translation
-    self.infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A,self.y)
+    self.infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A, self.y)
     self.fake_A_recon=self.infA['x_rec']
-    self.infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B,self.y)
+    self.infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B, self.y)
     self.fake_B_recon =self.infB['x_rec']
 
     # for display
