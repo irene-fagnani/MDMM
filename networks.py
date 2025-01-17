@@ -292,7 +292,8 @@ class MD_G_multi_concat(nn.Module):
         nn.ReLU(),
         nn.Linear(512, 512),
         nn.ReLU(),
-        nn.Linear(512, x_dim),
+        #nn.Linear(512, x_dim),
+        nn.Linear(512, 216),
         torch.nn.Sigmoid() # garantisce che l'output sia compreso tra 0 e 1
     ])
   def sample_z(self, y):
@@ -414,12 +415,12 @@ class MD_Dis(nn.Module):
   def cuda(self,gpu):
   #def cuda(self):
     # MODIFICHE NVIDIA
-    # self.model.cpu()
-    # self.conv1.cpu()
-    # self.conv2.cpu()
-    self.model.cuda(gpu)
-    self.conv1.cuda(gpu)
-    self.conv2.cuda(gpu)
+    self.model.cpu()
+    self.conv1.cpu()
+    self.conv2.cpu()
+    # self.model.cuda(gpu)
+    # self.conv1.cuda(gpu)
+    # self.conv2.cuda(gpu)
     
 
   def forward(self, x):
@@ -642,9 +643,9 @@ class GaussianNoiseLayer(nn.Module):
     if self.training == False:
       return x
     # MODIFICA NVIDIA
-    noise = Variable(torch.randn(x.size()).cuda(x.get_device()))
-    #device =x.get_device() if x.is_cuda else 'cpu' # commentra se si usa CUDA
-    #noise = Variable(torch.randn(x.size()).to(device)) # commentra se si usa CUDA
+    #noise = Variable(torch.randn(x.size()).cuda(x.get_device()))
+    device =x.get_device() if x.is_cuda else 'cpu' # commentra se si usa CUDA
+    noise = Variable(torch.randn(x.size()).to(device)) # commentra se si usa CUDA
     return x + noise
 
 class ReLUINSConvTranspose2d(nn.Module):
