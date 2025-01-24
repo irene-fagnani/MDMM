@@ -191,7 +191,7 @@ class MD_multi(nn.Module):
       #self.z_attr = eps.mul(std).add_(self.mu)
       self.z_attr=self.inf["gaussian"]
       self.y=self.inf["categorical"]
-      print("y",self.y.size())
+      #print("y",self.y.size())
       logits = self.inf['logits']
       _, predicted_labels = torch.max(logits, dim=1)
       #print("predicted_labels",predicted_labels)
