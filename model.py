@@ -515,6 +515,9 @@ class MD_multi(nn.Module):
     loss=0
     for (data,label) in data_loader:
     # Se le label vere non sono one-hot, ma indici, usa F.cross_entropy direttamente
+      if label.size() != torch.Size([2, 2]):
+        print(f"Dimensione di label non valida: {label.size()}. Salto il ciclo.")
+        continue
       true_labels = label[1]
       logits = self.logits
       _, predicted_labels = torch.max(logits, dim=1)
