@@ -233,23 +233,23 @@ class MD_multi(nn.Module):
 
     # get reconstructed encoded z_a
     if self.concat:
-      self.inf= self.enc_a.forward(self.fake_encoded_img, self.c_org)
-      self.mu_recon=self.inf["mean"]
-      self.logvar_recon=self.inf['var'].log()
+      self.inf_recon= self.enc_a.forward(self.fake_encoded_img, self.c_org)
+      self.mu_recon=self.inf_recon["mean"]
+      self.logvar_recon=self.inf_recon['var'].log()
       std_recon = self.logvar_recon.mul(0.5).exp_()
       eps_recon = self.get_z_random(std_recon.size(0), std_recon.size(1), 'gauss')
       #self.z_attr_recon = eps_recon.mul(std_recon).add_(self.mu_recon)
-      self.z_attr_recon=self.inf["gaussian"]
-      self.y=self.inf["categorical"]
-      self.logits = self.inf['logits']
+      self.z_attr_recon=self.inf_recon["gaussian"]
+      self.y_recon=self.inf_recon["categorical"]
+      #self.logits = self.inf_recon['logits']
     else:
       self.z_attr_recon = self.enc_a.forward(self.fake_encoded_img, self.c_org)
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
 
     # second cross translation
-    self.infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A, self.y)
+    self.infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A, self.y_recon)
     self.fake_A_recon=self.infA['x_rec']
-    self.infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B, self.y)
+    self.infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B, self.y_recon)
     self.fake_B_recon =self.infB['x_rec']
 
     # for display
@@ -261,8 +261,8 @@ class MD_multi(nn.Module):
     # for latent regression
     self.fake_random_img = torch.cat((self.fake_A_random, self.fake_B_random), 0)
     if self.concat:
-      self.inf= self.enc_a.forward(self.fake_random_img, self.c_org)
-      self.mu2=self.inf['mean']
+      self.inf2= self.enc_a.forward(self.fake_random_img, self.c_org)
+      self.mu2=self.inf2['mean']
       self.mu2_a, self.mu2_b = torch.split(self.mu2, half_size, 0)
     else:
       self.z_attr_random = self.enc_a.forward(self.fake_random_img, self.c_org)
