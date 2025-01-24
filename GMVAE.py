@@ -296,7 +296,7 @@ class LossFunctions:
       # print("z_mu_prior",z_mu_prior)
       # print("z_var_prior",z_var_prior)
       loss = self.log_normal(z, z_mu, z_var) - self.log_normal(z, z_mu_prior, z_var_prior)
-      print("gaussian loss",loss.mean())
+      #print("gaussian loss",loss.mean())
       return loss.mean()
 
 
