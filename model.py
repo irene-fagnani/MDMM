@@ -365,8 +365,11 @@ class MD_multi(nn.Module):
       # kl_element = self.mu.pow(2).add_(self.logvar.exp()).mul_(-1).add_(1).add_(self.logvar)
       # loss_kl_za = torch.sum(kl_element).mul_(-0.5) * 0.01
       loss=GMVAE.LossFunctions()
-      loss_kl_za_a = loss.gaussian_loss(self.z_attr, self.mu, self.logvar, self.infA["y_mean"], self.infA["y_var"])
-      loss_kl_za_b = loss.gaussian_loss(self.z_attr, self.mu, self.logvar, self.infB["y_mean"], self.infB["y_var"])
+      half_size = self.input.size(0)//2
+      mu_a, mu_b = torch.split(self.mu, half_size, 0)
+      logvar_a, logvar_b = torch.split(self.mu, half_size, 0)
+      loss_kl_za_a = loss.gaussian_loss(self.z_attr_a, mu_a,logvar_a , self.infA["y_mean"], self.infA["y_var"])
+      loss_kl_za_b = loss.gaussian_loss(self.z_attr_b, mu_b, logvar_b, self.infB["y_mean"], self.infB["y_var"])
       loss_kl_za=(loss_kl_za_a+loss_kl_za_b)*0.000001
     else:
       loss_kl_za = self._l2_regularize(self.z_attr)*0.000001
