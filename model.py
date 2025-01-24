@@ -519,7 +519,7 @@ class MD_multi(nn.Module):
         print(f"Dimensione di label non valida: {label.size()}. Salto il ciclo.")
         continue
       true_labels = label[1]
-      logits = self.logits
+      logits = self.inf_recon['logits']
       _, predicted_labels = torch.max(logits, dim=1)
       predicted_labels=predicted_labels.float()
       device = predicted_labels.device  # Get the device of predicted_labels
