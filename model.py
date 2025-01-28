@@ -344,12 +344,12 @@ class MD_multi(nn.Module):
     # Ladv for generator
     pred_fake, pred_fake_cls = self.dis1.forward(self.fake_encoded_img)
     loss_G_GAN = 0
-    for out_a in pred_fake:
-      outputs_fake = nn.functional.sigmoid(out_a)
+    #for out_a in pred_fake:
+    #  outputs_fake = nn.functional.sigmoid(out_a)
       #NVIDIA
-      all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
+     # all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
       #all_ones = torch.ones_like(outputs_fake).cpu()
-      loss_G_GAN += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
+    à  loss_G_GAN += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
 
     # classification
     loss_G_cls = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
