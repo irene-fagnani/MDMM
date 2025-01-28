@@ -373,6 +373,7 @@ class MD_multi(nn.Module):
       loss_kl_za_a = loss.gaussian_loss(self.z_attr_a, mu_a,logvar_a , self.infA["y_mean"], self.infA["y_var"])
       loss_kl_za_b = loss.gaussian_loss(self.z_attr_b, mu_b, logvar_b, self.infB["y_mean"], self.infB["y_var"])
       loss_kl_za=(loss_kl_za_a+loss_kl_za_b)*0.000001
+      loss_kl_za = torch.clamp(loss_kl_za, min=-1e6, max=1e6)
       
     else:
       loss_kl_za = self._l2_regularize(self.z_attr)*0.000001
