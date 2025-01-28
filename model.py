@@ -404,13 +404,14 @@ class MD_multi(nn.Module):
     # Ladv for generator
     pred_fake, pred_fake_cls = self.dis2.forward(self.fake_random_img)
 
-    # loss_G_GAN2 = 0
-    # for out_a in pred_fake:
-    #   outputs_fake = nn.functional.sigmoid(out_a)
+    loss_G_GAN2 = 0
+    for out_a in pred_fake:
+      outputs_fake = nn.functional.sigmoid(out_a)
     #   #NVIDIA
     #   all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
-    #   #all_ones = torch.ones_like(outputs_fake).cpu()
-    #   loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
+      all_ones = torch.ones_like(outputs_fake).cpu()
+      print("all ones dim: ", all_ones.size())
+      loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
     
     loss_G_GAN2 = self.label_similarity_loss(self.train)*10
     print("loss_G_GAN2",loss_G_GAN2)
