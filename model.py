@@ -317,6 +317,7 @@ class MD_multi(nn.Module):
     return loss_D_gan, loss_D_cls
 
   def update_EG(self):
+    torch.nn.utils.clip_grad_norm_(self.parameters(), max_norm=1.0)
     # update G, Ec, Ea
     self.enc_c_opt.zero_grad()
     self.enc_a_opt.zero_grad()
@@ -335,6 +336,7 @@ class MD_multi(nn.Module):
     self.gen_opt.step()
 
   def backward_EG(self):
+    torch.nn.utils.clip_grad_norm_(self.parameters(), max_norm=1.0)
     # content Ladv for generator
     if self.opts.isDcontent:
       loss_G_GAN_content = self.backward_G_GAN_content(self.z_content)
