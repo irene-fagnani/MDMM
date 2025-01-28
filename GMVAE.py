@@ -295,8 +295,10 @@ class LossFunctions:
       # print("z_var",z_var)
       # print("z_mu_prior",z_mu_prior)
       # print("z_var_prior",z_var_prior)
-      epsilon=1e-6
-      loss = self.log_normal(z, z_mu, z_var+epsilon) - self.log_normal(z, z_mu_prior, z_var_prior+epsilon)
+      z_var = F.softplus(z_var)
+      z_var_prior = F.softplus(z_var_prior)
+      loss = self.log_normal(z, z_mu, z_var) - self.log_normal(z, z_mu_prior, z_var_prior)
+      loss = torch.where(torch.isfinite(loss), loss, torch.zeros_like(loss))
       #print("gaussian loss",loss.mean())
       return loss.mean()
 
