@@ -234,6 +234,7 @@ class MD_multi(nn.Module):
     # get reconstructed encoded z_a
     if self.concat:
       self.inf_recon= self.enc_a.forward(self.fake_encoded_img, self.c_org)
+      #print("categorical (y) inf recon : ", self.inf_recon["categorical"])
       self.mu_recon=self.inf_recon["mean"]
       self.logvar_recon=self.inf_recon['var'].log()
       std_recon = self.logvar_recon.mul(0.5).exp_()
@@ -336,7 +337,6 @@ class MD_multi(nn.Module):
     self.gen_opt.step()
 
   def backward_EG(self):
-    torch.nn.utils.clip_grad_norm_(self.parameters(), max_norm=1.0)
     # content Ladv for generator
     if self.opts.isDcontent:
       loss_G_GAN_content = self.backward_G_GAN_content(self.z_content)
@@ -350,7 +350,7 @@ class MD_multi(nn.Module):
       all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
       #all_ones = torch.ones_like(outputs_fake).cpu()
     loss_G_GAN += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
-
+    #loss_similarity=self.label_similarity_loss()*10
     # classification
     loss_G_cls = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
 
@@ -372,15 +372,17 @@ class MD_multi(nn.Module):
       logvar_a, logvar_b = torch.split(self.logvar, half_size, 0)
       loss_kl_za_a = loss.gaussian_loss(self.z_attr_a, mu_a,logvar_a , self.infA["y_mean"], self.infA["y_var"])
       loss_kl_za_b = loss.gaussian_loss(self.z_attr_b, mu_b, logvar_b, self.infB["y_mean"], self.infB["y_var"])
-      loss_kl_za=(loss_kl_za_a+loss_kl_za_b)*0.000001
-      loss_kl_za = torch.clamp(loss_kl_za, min=-1e6, max=1e6)
+      loss_kl_za=(loss_kl_za_a+loss_kl_za_b)
+      #loss_kl_za = torch.clamp(loss_kl_za, min=0.0, max=1e6)
       
     else:
-      loss_kl_za = self._l2_regularize(self.z_attr)*0.000001
-      loss_kl_za = torch.clamp(loss_kl_za, min=-1e6, max=1e6)
-
+      loss_kl_za = self._l2_regularize(self.z_attr) # imporre postive?
+      #loss_kl_za = torch.clamp(loss_kl_za, min=0.0, max=1e6)
+    
+    print("BACKWARD_EG")
     print("loss_kl_za",loss_kl_za)
-    loss_G = loss_G_GAN + loss_G_cls + loss_G_L1_self + loss_G_L1_cc + loss_kl_zc + loss_kl_za
+    #print("loss similarity: ", loss_similarity)
+    loss_G = loss_G_GAN + loss_G_L1_self + loss_G_L1_cc + loss_kl_zc + loss_kl_za + loss_G_cls
     if self.opts.isDcontent:
       loss_G += loss_G_GAN_content
     loss_G.backward(retain_graph=True)
@@ -407,15 +409,16 @@ class MD_multi(nn.Module):
 
     loss_G_GAN2 = 0
     #for out_a in pred_fake:
-    #  outputs_fake = nn.functional.sigmoid(out_a)
+    #   outputs_fake = nn.functional.sigmoid(out_a)
     #   #NVIDIA
     #   all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
     #  all_ones = torch.ones_like(outputs_fake).cpu()
     #  print("all ones dim: ", all_ones.size())
-    #  loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
+    #   loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
     
-    loss_G_GAN2 = self.label_similarity_loss(self.train)*10
-    print("loss_G_GAN2",loss_G_GAN2)
+    loss_G_GAN2 = self.label_similarity_loss()
+    print("BACKWARD_G_ALONE")
+    print("loss_G_similarity ",loss_G_GAN2)
     # classification
     loss_G_cls2 = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
 
@@ -427,7 +430,7 @@ class MD_multi(nn.Module):
       loss_z_L1_a = torch.mean(torch.abs(self.z_attr_random_a - self.z_random)) * 10
       loss_z_L1_b = torch.mean(torch.abs(self.z_attr_random_b - self.z_random)) * 10
 
-    loss_z_L1 = loss_z_L1_a + loss_z_L1_b + loss_G_GAN2 + loss_G_cls2
+    loss_z_L1 = loss_z_L1_a + loss_z_L1_b + loss_G_GAN2
     loss_z_L1.backward()
     self.l1_recon_z_loss = loss_z_L1_a.item() + loss_z_L1_b.item()
     self.gan2_loss = loss_G_GAN2.item()
@@ -512,7 +515,7 @@ class MD_multi(nn.Module):
   
 
 
-  def label_similarity_loss(self,data_loader):
+  def label_similarity_loss(self):
     # loss=0
     # for pred in predicted_labels:
     #   if true_labels.dim() == 1:
@@ -522,22 +525,28 @@ class MD_multi(nn.Module):
     #       loss = -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
     # return loss
     loss=0
-    for (data,label) in data_loader:
+    #print("COMPUTE LABEL_SIMILARITY_LOSS ")
+    label=self.c_org
     # Se le label vere non sono one-hot, ma indici, usa F.cross_entropy direttamente
-      if label.size() != torch.Size([2, 2]):
-        print(f"Dimensione di label non valida: {label.size()}. Salto il ciclo.")
-        continue
-      true_labels = label[1]
-      logits = self.inf_recon['logits']
-      _, predicted_labels = torch.max(logits, dim=1)
+    if label.size() != torch.Size([2, 2]):
+      print(f"Dimensione di label non valida: {label.size()}. Salto il ciclo.")
+      #true_labels = label[1]
+    if label.size()==torch.Size([2,2]):
+      true_labels=torch.argmax(label, dim=1) 
+      true_labels=true_labels.float()
+      _, predicted_labels = torch.max(self.inf_recon['categorical'], dim=1) # self.y_recon
       predicted_labels=predicted_labels.float()
+      #print("predicetd labels: ", predicted_labels)
+      #print("true_labels: ", true_labels)
       device = predicted_labels.device  # Get the device of predicted_labels
       true_labels = true_labels.to(device)  # Move true_labels to the same device
       if true_labels.dim() == 1:
-          loss += F.cross_entropy(predicted_labels, true_labels, reduction="mean")
+            loss = F.cross_entropy(predicted_labels, true_labels, reduction="mean")
+            #loss=self.cls_loss(predicted_labels, true_labels) # usa la stessa loss utilizzata in backward_G_alone.
       else:
-          # Altrimenti, se sono one-hot
-          loss += -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
+            # Altrimenti, se sono one-hot
+            print("one hot labels")
+            loss += -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
     return loss
 
   def train_epoch_GMVAE(self, optimizer, data_loader):

@@ -738,4 +738,3 @@ def remove_spectral_norm(module, name='weight'):
       del module._forward_pre_hooks[k]
       return module
   raise ValueError("spectral_norm of '{}' not found in {}".format(name, module))
-
