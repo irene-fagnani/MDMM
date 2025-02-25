@@ -208,6 +208,10 @@ class MD_multi(nn.Module):
     #print("z_random",self.z_random.size())
     input_attr_forA = torch.cat((self.z_attr_a, self.z_attr_a, self.z_random),0)
     input_attr_forB = torch.cat((self.z_attr_b, self.z_attr_b, self.z_random),0)
+    y_A=self.y[0:half_size]
+    y_b=self.y[half_size:]
+    input_y_forA = torch.cat((y_A, y_A, y_A), 0)
+    input_y_forB = torch.cat((y_b, y_b, y_b), 0)
     input_c_forA = torch.cat((c_org_A, c_org_A, c_org_A), 0)
     input_c_forB = torch.cat((c_org_B, c_org_B, c_org_B), 0)
     #print("content",input_content_forA.size())
@@ -215,8 +219,8 @@ class MD_multi(nn.Module):
     #print("c",input_c_forA.size())
     #print("y",y.size())
     #print("y",y.size())
-    self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_c_forA, self.y)
-    self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_c_forB, self.y)
+    self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_y_forA, self.y)
+    self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_y_forB, self.y)
     output_fakeA=self.infA['x_rec'] # ([3, 3, 216, 139968])
     output_fakeB=self.infB['x_rec']
     #print("dim",output_fakeA.size())
