@@ -209,9 +209,9 @@ class MD_multi(nn.Module):
     input_attr_forA = torch.cat((self.z_attr_a, self.z_attr_a, self.z_random),0)
     input_attr_forB = torch.cat((self.z_attr_b, self.z_attr_b, self.z_random),0)
     y_A=self.y[0:half_size]
-    y_b=self.y[half_size:]
+    y_B=self.y[half_size:]
     input_y_forA = torch.cat((y_A, y_A, y_A), 0)
-    input_y_forB = torch.cat((y_b, y_b, y_b), 0)
+    input_y_forB = torch.cat((y_B, y_B, y_B), 0)
     input_c_forA = torch.cat((c_org_A, c_org_A, c_org_A), 0)
     input_c_forB = torch.cat((c_org_B, c_org_B, c_org_B), 0)
     #print("content",input_content_forA.size())
@@ -219,8 +219,8 @@ class MD_multi(nn.Module):
     #print("c",input_c_forA.size())
     #print("y",y.size())
     #print("y",y.size())
-    self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_y_forA, self.y)
-    self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_y_forB, self.y)
+    self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_y_forA, y_A)
+    self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_y_forB, y_B)
     output_fakeA=self.infA['x_rec'] # ([3, 3, 216, 139968])
     output_fakeB=self.infB['x_rec']
     #print("dim",output_fakeA.size())
@@ -252,9 +252,11 @@ class MD_multi(nn.Module):
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
 
     # second cross translation
-    self.infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, c_org_A, self.y_recon)
+    y_recon_A=self.y_recon[0:half_size]
+    y_recon_B=self.y_recon[half_size:]
+    self.infA = self.gen.forward(self.z_content_recon_a, self.z_attr_recon_a, y_recon_A, y_recon_A)
     self.fake_A_recon=self.infA['x_rec']
-    self.infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, c_org_B, self.y_recon)
+    self.infB= self.gen.forward(self.z_content_recon_b, self.z_attr_recon_b, y_recon_B, y_recon_B)
     self.fake_B_recon =self.infB['x_rec']
 
     # for display
