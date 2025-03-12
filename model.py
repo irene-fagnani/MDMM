@@ -355,7 +355,7 @@ class MD_multi(nn.Module):
       #NVIDIA
       all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
       #all_ones = torch.ones_like(outputs_fake).cpu()
-    loss_G_GAN += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
+      loss_G_GAN += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
     #loss_similarity=self.label_similarity_loss()*10
     # classification
     loss_G_cls = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
@@ -385,8 +385,8 @@ class MD_multi(nn.Module):
       loss_kl_za = self._l2_regularize(self.z_attr) # imporre postive?
       #loss_kl_za = torch.clamp(loss_kl_za, min=0.0, max=1e6)
     
-    print("BACKWARD_EG")
-    print("loss_kl_za",loss_kl_za)
+    #print("BACKWARD_EG")
+    #print("loss_kl_za",loss_kl_za)
     #print("loss similarity: ", loss_similarity)
     loss_G = loss_G_GAN + loss_G_L1_self + loss_G_L1_cc + loss_kl_zc + loss_kl_za + loss_G_cls
     if self.opts.isDcontent:
@@ -423,8 +423,8 @@ class MD_multi(nn.Module):
     #   loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
     
     loss_G_GAN2 = self.label_similarity_loss()
-    print("BACKWARD_G_ALONE")
-    print("loss_G_similarity ",loss_G_GAN2)
+    #print("BACKWARD_G_ALONE")
+    #print("loss_G_similarity ",loss_G_GAN2)
     # classification
     loss_G_cls2 = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
 
