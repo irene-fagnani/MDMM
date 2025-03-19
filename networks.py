@@ -339,7 +339,7 @@ class MD_G_multi_concat(nn.Module):
     z_img4 = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), out3.size(2), out3.size(3))
     x_and_z4 = torch.cat([out3, z_img4], 1)
     out4 = self.dec4(x_and_z4)
-    y_mu, y_var = self.pzy(y)
+    y_mu, y_var = self.pzy(c0)
 
     # p(x|z)
     x_rec = self.pxz(out4)
