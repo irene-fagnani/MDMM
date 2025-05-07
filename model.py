@@ -33,8 +33,8 @@ class MD_multi(nn.Module):
       self.enc_a = networks.MD_E_attr(opts.input_dim, output_nc=self.nz, c_dim=opts.num_domains)
       self.gen = networks.MD_G_multi(opts.input_dim, nz=self.nz, c_dim=opts.num_domains)
 
-    self.dis1_opt = torch.optim.Adam(self.dis1.parameters(), lr=lr, betas=(0.5, 0.999), weight_decay=0.0001)
-    self.dis2_opt = torch.optim.Adam(self.dis2.parameters(), lr=lr, betas=(0.5, 0.999), weight_decay=0.0001)
+    self.dis1_opt = torch.optim.Adam(self.dis1.parameters(), lr=lr/2, betas=(0.5, 0.999), weight_decay=0.0001)
+    self.dis2_opt = torch.optim.Adam(self.dis2.parameters(), lr=lr/2, betas=(0.5, 0.999), weight_decay=0.0001)
     self.enc_c_opt = torch.optim.Adam(self.enc_c.parameters(), lr=lr, betas=(0.5, 0.999), weight_decay=0.0001)
     self.enc_a_opt = torch.optim.Adam(self.enc_a.parameters(), lr=lr, betas=(0.5, 0.999), weight_decay=0.0001)
     self.gen_opt = torch.optim.Adam(self.gen.parameters(), lr=lr, betas=(0.5, 0.999), weight_decay=0.0001)

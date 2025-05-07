@@ -51,7 +51,7 @@ def main():
 
   # train
   print('\n--- train ---')
-  max_it = 1000 # 50000
+  max_it = 25000 # 50000
   model.network=GMVAE.GMVAENet(opts.x_dim, opts.gaussian_size, opts.num_classes)
   optimizer = optim.Adam(model.network.parameters(), lr=0.0001)
   model.gumbel_temp = opts.init_temp
