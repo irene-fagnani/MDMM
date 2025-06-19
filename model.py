@@ -319,7 +319,7 @@ class MD_multi(nn.Module):
     loss_D_cls = self.cls_loss(pred_real_cls, self.c_org)
     loss_D = loss_D_gan + self.opts.lambda_cls * loss_D_cls 
     self.loss_D = loss_D.item()
-    loss_D = + self.opts.lambda_cls * loss_D_cls 
+    #loss_D = + self.opts.lambda_cls * loss_D_cls 
     loss_D.backward()
     return loss_D_gan, loss_D_cls
 
