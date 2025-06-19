@@ -9,8 +9,8 @@ class TrainOptions():
     self.parser.add_argument('--num_domains', type=int, default=3)
     self.parser.add_argument('--phase', type=str, default='train', help='phase for dataloading')
     self.parser.add_argument('--batch_size', type=int, default=2, help='batch size')
-    self.parser.add_argument('--resize_size', type=int, default=256, help='resized image size for training')
-    self.parser.add_argument('--crop_size', type=int, default=216, help='cropped image size for training')
+    self.parser.add_argument('--resize_size', type=int, default=128, help='resized image size for training')
+    self.parser.add_argument('--crop_size', type=int, default=108, help='cropped image size for training')
     self.parser.add_argument('--input_dim', type=int, default=3, help='# of input channels for domain A')
     #self.parser.add_argument('--nThreads', type=int, default=8, help='# of threads for data loader')
     self.parser.add_argument('--nThreads', type=int, default=2, help='# of threads for data loader')
@@ -43,7 +43,7 @@ class TrainOptions():
 
     #GMVAE parameters
     self.parser.add_argument('--num_classes', type=int, default=2, help='number of classes (default: 2)')
-    self.parser.add_argument('--gaussian_size', default=216, type=int, help='gaussian size (default: 64) (z_dim)')
+    self.parser.add_argument('--gaussian_size', default=108, type=int, help='gaussian size (default: 64) (z_dim)')
     self.parser.add_argument('--x_dim', default=139968, type=int, help='input size (default: 2916) (2916=3*216*3*3)')
     
     ## Gumbel parameters

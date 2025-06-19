@@ -294,7 +294,7 @@ class MD_G_multi_concat(nn.Module):
         nn.Linear(512, 512),
         nn.ReLU(),
         #nn.Linear(512, x_dim),
-        nn.Linear(512, 216),
+        nn.Linear(512, 108),
         torch.nn.Sigmoid() # garantisce che l'output sia compreso tra 0 e 1
     ])
   def sample_z(self, y):

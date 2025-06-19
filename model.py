@@ -13,7 +13,7 @@ class MD_multi(nn.Module):
     self.opts = opts
     lr = 0.0001
     lr_dcontent = lr/2.5 
-    self.nz =216#64#8
+    self.nz =108#64#8
     self.train=data
 
     self.isDcontent = opts.isDcontent
