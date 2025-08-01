@@ -12,6 +12,16 @@ class MD_multi(nn.Module):
     super(MD_multi, self).__init__()
     self.opts = opts
     lr = 0.0001
+    if opts.two_time_scale_update_rule == 'double_gen_enc':
+      lr_dis= lr
+      lr_enc_gen=2*lr
+    elif opts.two_time_scale_update_rule == 'half_discr':
+      lr_dis= lr/2
+      lr_enc_gen=lr
+    else:
+      lr_dis= lr
+      lr_enc_gen=lr
+    self.ttsc=opts.two_time_scale_update_rule
     lr_dcontent = lr/2.5 
     self.nz =108#64#8
     self.train=data
@@ -28,16 +38,16 @@ class MD_multi(nn.Module):
     if self.concat:
       self.enc_a = networks.MD_E_attr_concat(opts.input_dim,opts.gaussian_size,opts.num_classes, output_nc=self.nz, c_dim=opts.num_domains, \
           norm_layer=None, nl_layer=networks.get_non_linearity(layer_type='lrelu'))
-      self.gen = networks.MD_G_multi_concat(opts.input_dim,opts.x_dim,opts.gaussian_size,opts.crop_size, c_dim=opts.num_domains, nz=self.nz)
+      self.gen = networks.MD_G_multi_concat(opts.input_dim,opts.x_dim,opts.gaussian_size,opts.crop_size, c_dim=opts.num_domains, nz=self.nz, use_adain=opts.use_adain, double_ConvT=opts.double_layer_ReLUINSConvTranspose)
     else:
       self.enc_a = networks.MD_E_attr(opts.input_dim, output_nc=self.nz, c_dim=opts.num_domains)
-      self.gen = networks.MD_G_multi(opts.input_dim, nz=self.nz, c_dim=opts.num_domains)
+      self.gen = networks.MD_G_multi(opts.input_dim, nz=self.nz, c_dim=opts.num_domains, double_ConvT=opts.double_layer_ReLUINSConvTranspose)
 
-    self.dis1_opt = torch.optim.Adam(self.dis1.parameters(), lr=lr/2, betas=(0.5, 0.999), weight_decay=0.0001)
-    self.dis2_opt = torch.optim.Adam(self.dis2.parameters(), lr=lr/2, betas=(0.5, 0.999), weight_decay=0.0001)
-    self.enc_c_opt = torch.optim.Adam(self.enc_c.parameters(), lr=lr, betas=(0.5, 0.999), weight_decay=0.0001)
-    self.enc_a_opt = torch.optim.Adam(self.enc_a.parameters(), lr=lr, betas=(0.5, 0.999), weight_decay=0.0001)
-    self.gen_opt = torch.optim.Adam(self.gen.parameters(), lr=lr, betas=(0.5, 0.999), weight_decay=0.0001)
+    self.dis1_opt = torch.optim.Adam(self.dis1.parameters(), lr=lr_dis, betas=(0.5, 0.999), weight_decay=0.0001)
+    self.dis2_opt = torch.optim.Adam(self.dis2.parameters(), lr=lr_dis, betas=(0.5, 0.999), weight_decay=0.0001)
+    self.enc_c_opt = torch.optim.Adam(self.enc_c.parameters(), lr=lr_enc_gen, betas=(0.5, 0.999), weight_decay=0.0001)
+    self.enc_a_opt = torch.optim.Adam(self.enc_a.parameters(), lr=lr_enc_gen, betas=(0.5, 0.999), weight_decay=0.0001)
+    self.gen_opt = torch.optim.Adam(self.gen.parameters(), lr=lr_enc_gen, betas=(0.5, 0.999), weight_decay=0.0001)
     #if self.isDcontent:
     self.disContent = networks.MD_Dis_content(c_dim=opts.num_domains) 
     self.disContent_opt = torch.optim.Adam(self.disContent.parameters(), lr=lr_dcontent, betas=(0.5, 0.999), weight_decay=0.0001)

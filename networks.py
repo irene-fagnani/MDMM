@@ -177,7 +177,7 @@ class MD_E_attr_concat(nn.Module):
 
 
 class MD_G_uni(nn.Module):
-  def __init__(self, output_dim, c_dim=3):
+  def __init__(self, output_dim, c_dim=3, double_ConvT=False):
     super(MD_G_uni, self).__init__()
     self.c_dim = c_dim
     tch = 256
@@ -188,9 +188,9 @@ class MD_G_uni(nn.Module):
     dec = []
     for i in range(0, 3):
       dec += [INSResBlock(tch, tch)]
-    dec += [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1)]
+    dec += [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1, double_layer=double_ConvT)]
     tch = tch//2
-    dec += [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1)]
+    dec += [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1, double_layer=double_ConvT)]
     tch = tch//2
     dec += [nn.ConvTranspose2d(tch, output_dim, kernel_size=1, stride=1, padding=0)]+[nn.Tanh()]
     self.dec = nn.Sequential(*dec)
@@ -257,13 +257,45 @@ class old_MD_G_multi_concat(nn.Module):
     out4 = self.dec4(x_and_z4)
     out4=self.generative_net(out4,c0)
     return out4
+  
+  
+class AdaIN(nn.Module):
+    def _init_(self, in_channels, style_dim):
+        super(AdaIN, self)._init_()
+        # Il vettore di stile che modulerà la normalizzazione
+        self.style_fc = nn.Sequential(
+            nn.Linear(style_dim, in_channels),  # Mappa lo stile (ad esempio c) alla dimensione dell'input
+            nn.ReLU(),
+            nn.Linear(in_channels, in_channels)
+        )
+
+    def forward(self, x, style):
+        # Calcola la media e la varianza della feature map
+        mean = x.mean([2, 3], keepdim=True)  # Calcola la media su altezza e larghezza
+        var = x.var([2, 3], keepdim=True)    # Calcola la varianza su altezza e larghezza
+
+        # Calcola il fattore di modulazione dallo stile
+        style_params = self.style_fc(style)
+        gamma, beta = style_params, style_params  # Usiamo gamma e beta per la modulazione
+
+        # Applicare la normalizzazione adattiva
+        x = (x - mean) / (torch.sqrt(var + 1e-5))  # Normalizzazione
+        x = gamma.view(gamma.size(0), gamma.size(1), 1, 1) * x + beta.view(beta.size(0), beta.size(1), 1, 1)
+        return x
 
 class MD_G_multi_concat(nn.Module):
-  def __init__(self, output_dim,x_dim, z_dim, crop_size, c_dim=3, nz=8):
+  def __init__(self, output_dim,x_dim, z_dim, crop_size, c_dim=3, nz=8, use_adain=False, double_ConvT=False):
     super(MD_G_multi_concat, self).__init__()
     self.nz = nz
     self.c_dim = c_dim
-    tch = 256
+    self.use_adain=use_adain
+    self.double_ConvT = double_ConvT
+    if self.use_adain:
+      self.style_dim = 2
+      self.adain1 = AdaIN(tch, self.style_dim)
+      tch = 256 + self.nz + self.c_dim
+    else:
+      tch = 256
     dec_share = []
     dec_share += [INSResBlock(tch, tch)]
     self.dec_share = nn.Sequential(*dec_share)
@@ -272,10 +304,10 @@ class MD_G_multi_concat(nn.Module):
     for i in range(0, 3):
       dec1 += [INSResBlock(tch, tch)]
     tch = tch + self.nz
-    dec2 = [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1)]
+    dec2 = [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1, double_layer=self.double_ConvT)]
     tch = tch//2
     tch = tch + self.nz
-    dec3 = [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1)]
+    dec3 = [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1, double_layer=self.double_ConvT)]
     tch = tch//2
     tch = tch + self.nz
     dec4 = [nn.ConvTranspose2d(tch, output_dim, kernel_size=1, stride=1, padding=0)]+[nn.Tanh()]
@@ -321,6 +353,8 @@ class MD_G_multi_concat(nn.Module):
     #z=self.sample_z(y)
     c0 = c
     out0 = self.dec_share(x)
+    if self.use_adain:
+      out0 = self.adain1(out0, c)
     z_img = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), x.size(2), x.size(3))
     c = c.view(c.size(0), c.size(1), 1, 1)
     c = c.repeat(1, 1, out0.size(2), out0.size(3))
@@ -348,7 +382,7 @@ class MD_G_multi_concat(nn.Module):
     return output
 
 class MD_G_multi(nn.Module):
-  def __init__(self, output_dim, c_dim=3, nz=8):
+  def __init__(self, output_dim, c_dim=3, nz=8, double_ConvT=False):
     super(MD_G_multi, self).__init__()
     self.nz = nz
     ini_tch = 256
@@ -361,9 +395,9 @@ class MD_G_multi(nn.Module):
     self.dec4 = MisINSResBlock(tch, tch_add)
 
     dec5 = []
-    dec5 += [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1)]
+    dec5 += [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1, double_layer=double_ConvT)]
     tch = tch//2
-    dec5 += [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1)]
+    dec5 += [ReLUINSConvTranspose2d(tch, tch//2, kernel_size=3, stride=2, padding=1, output_padding=1, double_layer=double_ConvT)]
     tch = tch//2
     dec5 += [nn.ConvTranspose2d(tch, output_dim, kernel_size=1, stride=1, padding=0)]
     dec5 += [nn.Tanh()]
@@ -650,12 +684,19 @@ class GaussianNoiseLayer(nn.Module):
     return x + noise
 
 class ReLUINSConvTranspose2d(nn.Module):
-  def __init__(self, n_in, n_out, kernel_size, stride, padding, output_padding):
+  def __init__(self, n_in, n_out, kernel_size, stride, padding, output_padding, double_layer=False):
     super(ReLUINSConvTranspose2d, self).__init__()
     model = []
     model += [nn.ConvTranspose2d(n_in, n_out, kernel_size=kernel_size, stride=stride, padding=padding, output_padding=output_padding, bias=True)]
     model += [LayerNorm(n_out)]
     model += [nn.ReLU(inplace=True)]
+    
+    if double_layer:
+      # *Second ConvTranspose Layer*
+      model += [nn.ConvTranspose2d(n_out, n_out, kernel_size=3, stride=1, padding=1, bias=True)]
+      model += [LayerNorm(n_out)]
+      model += [nn.ReLU(inplace=True)]
+
     self.model = nn.Sequential(*model)
     self.model.apply(gaussian_weights_init)
   def forward(self, x):

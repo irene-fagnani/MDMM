@@ -67,7 +67,10 @@ class TrainOptions():
                         help='weight of reconstruction loss (default: 1)')
     self.parser.add_argument('--rec_type', type=str, choices=['bce', 'mse'],
                         default='bce', help='desired reconstruction loss function (default: bce)')
-
+    
+    self.parser.add_argument('--use_adain', action='store_true', help='use AdaIN in generator', default=False)
+    self.parser.add_argument('--double_layer_ReLUINSConvTranspose', action='store_true', help='use double layer ReLU in INSConvTranspose', default=False)
+    self.parser.add_argument('--two_time_scale_update_rule', action='store_true', help='use two time scale update rule', choices=['double_gen_enc', 'half_discr'], default=None)
 
   def parse(self):
     self.opt = self.parser.parse_args()
