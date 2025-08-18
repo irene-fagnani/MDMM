@@ -40,7 +40,14 @@ class TrainOptions():
     self.parser.add_argument('--lambda_cls_G', type=float, default=5.0)
     self.parser.add_argument('--isDcontent', action='store_true')
     self.parser.add_argument('--gpu', type=int, default=0, help='gpu')
-    self.parser.add_argument('--use_cuda',default=True, action='store_true', help='use cuda if available')
+    self.parser.add_argument(
+        '--use_cpu',
+        action='store_false',
+        dest='use_cuda',
+        help='disable CUDA'
+    )
+
+
 
     #GMVAE parameters
     self.parser.add_argument('--num_classes', type=int, default=2, help='number of classes (default: 2)')
@@ -71,7 +78,14 @@ class TrainOptions():
     
     self.parser.add_argument('--use_adain', action='store_true', help='use AdaIN in generator', default=False)
     self.parser.add_argument('--double_layer_ReLUINSConvTranspose', action='store_true', help='use double layer ReLU in INSConvTranspose', default=False)
-    self.parser.add_argument('--two_time_scale_update_rule', action='store_true', help='use two time scale update rule', choices=['double_gen_enc', 'half_discr'], default=None)
+    self.parser.add_argument(
+        '--two_time_scale_update_rule',
+        type=str,
+        choices=['double_gen_enc', 'half_discr', 'none'],
+        help='use two time scale update rule',
+        default=None
+    )
+
 
   def parse(self):
     self.opt = self.parser.parse_args()
