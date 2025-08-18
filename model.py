@@ -164,7 +164,6 @@ class MD_multi(nn.Module):
     self.mu=self.inf["mean"]
     #self.logvar=self.infvar['var'].clamp(1e-5).log()
     self.logvar=self.inf['var'].clamp(1e-5).log()
-    #print("log",self.logvar)
     std = self.logvar.mul(0.5).exp_()
     eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
     self.z_attr = eps.mul(std).add_(self.mu)
@@ -185,26 +184,21 @@ class MD_multi(nn.Module):
     # get encoded z_c
     self.real_img = torch.cat((self.real_A, self.real_B),0)
     self.z_content = self.enc_c.forward(self.real_img)
-    #print("z",self.z_content.size())
     self.z_content_a, self.z_content_b = torch.split(self.z_content, half_size, dim=0)
 
     # get encoded z_a
     if self.concat:
       #self.inf, infvar = self.enc_a.forward(self.real_img, self.c_org)
       self.inf= self.enc_a.forward(self.real_img, self.c_org)
-      #print("inf",inf)
       self.mu=self.inf["mean"]
       self.logvar=self.inf['var'].clamp(1e-5).log()
-      #print("log",self.logvar.size())
       std = self.logvar.mul(0.5).exp_()
       eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
       #self.z_attr = eps.mul(std).add_(self.mu)
       self.z_attr=self.inf["gaussian"]
       self.y=self.inf["categorical"]
-      #print("y",self.y.size())
       logits = self.inf['logits']
       _, predicted_labels = torch.max(logits, dim=1)
-      #print("predicted_labels",predicted_labels)
     else:
       self.z_attr = self.enc_a.forward(self.real_img, self.c_org)
     self.z_attr_a, self.z_attr_b = torch.split(self.z_attr, half_size, dim=0)
@@ -214,8 +208,6 @@ class MD_multi(nn.Module):
     # first cross translation
     input_content_forA = torch.cat((self.z_content_b, self.z_content_a, self.z_content_b),0)
     input_content_forB = torch.cat((self.z_content_a, self.z_content_b, self.z_content_a),0)
-    #print("z_attra",self.z_attr_a.size())
-    #print("z_random",self.z_random.size())
     input_attr_forA = torch.cat((self.z_attr_a, self.z_attr_a, self.z_random),0)
     input_attr_forB = torch.cat((self.z_attr_b, self.z_attr_b, self.z_random),0)
     y_A=self.y[0:half_size]
@@ -224,20 +216,11 @@ class MD_multi(nn.Module):
     input_y_forB = torch.cat((y_B, y_B, y_B), 0)
     input_c_forA = torch.cat((c_org_A, c_org_A, c_org_A), 0)
     input_c_forB = torch.cat((c_org_B, c_org_B, c_org_B), 0)
-    #print("content",input_content_forA.size())
-    #print("attr",input_attr_forA.size())
-    #print("c",input_c_forA.size())
-    #print("y",y.size())
-    #print("y",y.size())
     self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_y_forA, y_A)
     self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_y_forB, y_B)
     output_fakeA=self.infA['x_rec'] # ([3, 3, 216, 139968])
     output_fakeB=self.infB['x_rec']
-    #print("dim",output_fakeA.size())
     self.fake_A_encoded, self.fake_AA_encoded, self.fake_A_random = torch.split(output_fakeA, self.z_content_a.size(0), dim=0)
-    #print("dim A_encoded",self.fake_A_encoded.size())
-    #print("dim AA_encoded",self.fake_AA_encoded.size())
-    #print("dim A_random",self.fake_A_random.size())
     self.fake_B_encoded, self.fake_BB_encoded, self.fake_B_random = torch.split(output_fakeB, self.z_content_a.size(0), dim=0)
 
     # get reconstructed encoded z_c
@@ -248,7 +231,6 @@ class MD_multi(nn.Module):
     # get reconstructed encoded z_a
     if self.concat:
       self.inf_recon= self.enc_a.forward(self.fake_encoded_img, self.c_org)
-      #print("categorical (y) inf recon : ", self.inf_recon["categorical"])
       self.mu_recon=self.inf_recon["mean"]
       self.logvar_recon=self.inf_recon['var'].log()
       std_recon = self.logvar_recon.mul(0.5).exp_()
@@ -394,10 +376,7 @@ class MD_multi(nn.Module):
     else:
       loss_kl_za = self._l2_regularize(self.z_attr) # imporre postive?
       #loss_kl_za = torch.clamp(loss_kl_za, min=0.0, max=1e6)
-    
-    #print("BACKWARD_EG")
-    #print("loss_kl_za",loss_kl_za)
-    #print("loss similarity: ", loss_similarity)
+
     loss_G = loss_G_GAN + loss_G_L1_self + loss_G_L1_cc + loss_kl_zc + loss_kl_za + loss_G_cls
     if self.opts.isDcontent:
       loss_G += loss_G_GAN_content
@@ -433,8 +412,6 @@ class MD_multi(nn.Module):
     #   loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
     
     loss_G_GAN2 = self.label_similarity_loss()
-    #print("BACKWARD_G_ALONE")
-    #print("loss_G_similarity ",loss_G_GAN2)
     # classification
     loss_G_cls2 = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
 
@@ -541,7 +518,6 @@ class MD_multi(nn.Module):
     #       loss = -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
     # return loss
     loss=0
-    #print("COMPUTE LABEL_SIMILARITY_LOSS ")
     label=self.c_org
     # Se le label vere non sono one-hot, ma indici, usa F.cross_entropy direttamente
     if label.size() != torch.Size([2, 2]):
@@ -552,8 +528,6 @@ class MD_multi(nn.Module):
       true_labels=true_labels.float()
       _, predicted_labels = torch.max(self.inf_recon['categorical'], dim=1) # self.y_recon
       predicted_labels=predicted_labels.float()
-      #print("predicetd labels: ", predicted_labels)
-      #print("true_labels: ", true_labels)
       device = predicted_labels.device  # Get the device of predicted_labels
       true_labels = true_labels.to(device)  # Move true_labels to the same device
       if true_labels.dim() == 1:
@@ -589,9 +563,6 @@ class MD_multi(nn.Module):
     for (data, labels) in data_loader: # le dimensioni di questo data loader sono come quelle che abbiamo nel train??
       if self.cuda == 1:
         data = data.cuda()
-      #print("data",data.shape)
-      #print("labels",labels.shape)
-      #print("labels",labels)
       optimizer.zero_grad()
       # flatten data
       data = data.view(data.size(0), -1)
@@ -633,9 +604,7 @@ class MD_multi(nn.Module):
       optimizer.step()
       # save predicted and true labels
       predicted = unlab_loss_dic['predicted_labels'] # torch.Size([2])
-      #print(f"Predicted labels shape: {predicted.shape}")
       #decoded_labels = torch.argmax(labels, dim=1)  # Decode one-hot labels
-      #print(f"True labels shape: {decoded_labels.shape}")
       true_labels_list.append(labels[1])
       predicted_labels_list.append(predicted)
       num_batches += 1.
@@ -645,8 +614,6 @@ class MD_multi(nn.Module):
     gauss_loss /= num_batches
     cat_loss /= num_batches
     # concat all true and predicted labels
-    #print("true_lanels_list dimension: ",len(true_labels_list))
-    #print("predicted_lanels_list dimension: ",len(predicted_labels_list))
     true_labels = torch.cat(true_labels_list, dim=0).cpu().numpy()
     predicted_labels = torch.cat(predicted_labels_list, dim=0).cpu().numpy()
     # compute metrics
@@ -665,15 +632,11 @@ class MD_multi(nn.Module):
     """
     # obtain network variables
     loss_functions = GMVAE.LossFunctions()
-    #print("prima",type(out_net['x_rec']))
     z, data_recon = out_net['gaussian'], out_net['x_rec']
     logits, prob_cat = out_net['logits'], out_net['prob_cat']
-    #print(f"logits shape: {logits.shape}, batch size: {data.shape[0]}")
     y_mu, y_var = out_net['y_mean'], out_net['y_var']
     mu, var = out_net['mean'], out_net['var']
     # reconstruction loss
-    #print("dopo",type(data_recon))
-    #print("data type",type(data))
     print("data shape",len(data))
     print("data_recon shape",len(data_recon))
     loss_rec = loss_functions.reconstruction_loss(data, data_recon) 
