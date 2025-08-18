@@ -29,7 +29,6 @@ class MD_E_content(nn.Module):
     self.conv = nn.Sequential(*enc_c)
 
   def forward(self, x):
-    #print("dimensione x dim prima del problema ", x.size())
     return self.conv(x)
 
 class MD_E_attr(nn.Module):
@@ -115,7 +114,6 @@ class MD_E_attr_concat(nn.Module):
     self.conv = nn.Sequential(*conv_layers)
     # ci sono due reti neurali: una per q(y|x) e una per q(z|y,x)
     # q(y|x)
-    #print("x_dim", x_dim, y_dim,z_dim)
     self.inference_qyx = torch.nn.ModuleList([
         nn.Linear(output_nc, 512),
         nn.ReLU(),
@@ -135,21 +133,14 @@ class MD_E_attr_concat(nn.Module):
     
   # q(y|x)
   def qyx(self, x, temperature, hard):
-    #print("Entra in qyx")
     num_layers = len(self.inference_qyx)
     for i, layer in enumerate(self.inference_qyx):
       if i == num_layers - 1:
-        #print("entra in if")
         #last layer is gumbel softmax
         x = layer(x, temperature, hard)
       else:
-        #print("entra in else")
-        # print("x:", x)
-        # print("x dimension", x.shape)
-        #print("layer:", layer)
         x=layer(x) # dimension of x: torch.Size([1, 746496])
                     # layer is a torch linear object
-    #print("Esce da qyx")
     return x
   # funzione per calcolare q(y|x)
 
@@ -244,7 +235,6 @@ class old_MD_G_multi_concat(nn.Module):
     c = c.view(c.size(0), c.size(1), 1, 1)
     c = c.repeat(1, 1, out0.size(2), out0.size(3))
     x_c_z = torch.cat([out0, c, z_img], 1)
-    #print("size xcz",x_c_z.size())
     out1 = self.dec1(x_c_z)
     z_img2 = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), out1.size(2), out1.size(3))
     x_and_z2 = torch.cat([out1, z_img2], 1)
@@ -338,7 +328,6 @@ class MD_G_multi_concat(nn.Module):
 
   # p(z|y)
   def pzy(self, y):
-    #print("y",y.size())
     y_mu = self.y_mu(y)
     y_var = F.softplus(self.y_var(y)) # garantisce che la varianza sia sempre positiva
     return y_mu, y_var
@@ -358,11 +347,7 @@ class MD_G_multi_concat(nn.Module):
     z_img = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), x.size(2), x.size(3))
     c = c.view(c.size(0), c.size(1), 1, 1)
     c = c.repeat(1, 1, out0.size(2), out0.size(3))
-    # print("dim out0: ", out0.size())
-    # print("dim c: ", c.size())
-    # print("dim z_img: ", z_img.size())
     x_c_z = torch.cat([out0, c, z_img], 1)
-    #print("size xcz",x_c_z.size())
     out1 = self.dec1(x_c_z)
     z_img2 = z.view(z.size(0), z.size(1), 1, 1).expand(z.size(0), z.size(1), out1.size(2), out1.size(3))
     x_and_z2 = torch.cat([out1, z_img2], 1)
