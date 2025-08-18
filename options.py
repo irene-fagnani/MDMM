@@ -40,6 +40,7 @@ class TrainOptions():
     self.parser.add_argument('--lambda_cls_G', type=float, default=5.0)
     self.parser.add_argument('--isDcontent', action='store_true')
     self.parser.add_argument('--gpu', type=int, default=0, help='gpu')
+    self.parser.add_argument('--use_cuda',default=True, action='store_true', help='use cuda if available')
 
     #GMVAE parameters
     self.parser.add_argument('--num_classes', type=int, default=2, help='number of classes (default: 2)')

@@ -34,7 +34,7 @@ class MD_multi(nn.Module):
 
     self.dis1 = networks.MD_Dis(opts.input_dim, norm=opts.dis_norm, sn=opts.dis_spectral_norm, c_dim=opts.num_domains, image_size=opts.crop_size)
     self.dis2 = networks.MD_Dis(opts.input_dim, norm=opts.dis_norm, sn=opts.dis_spectral_norm, c_dim=opts.num_domains, image_size=opts.crop_size)
-    self.enc_c = networks.MD_E_content(opts.input_dim)
+    self.enc_c = networks.MD_E_content(opts.input_dim, opts.use_cuda)
     if self.concat:
       self.enc_a = networks.MD_E_attr_concat(opts.input_dim,opts.gaussian_size,opts.num_classes, output_nc=self.nz, c_dim=opts.num_domains, \
           norm_layer=None, nl_layer=networks.get_non_linearity(layer_type='lrelu'))
@@ -84,13 +84,13 @@ class MD_multi(nn.Module):
   def setgpu(self, gpu):
     self.gpu = gpu
     # MODIFICHE NVIDIA
-    self.dis1.cuda(self.gpu)
-    self.dis2.cuda(self.gpu)
+    self.dis1.cuda(self.gpu, self.opts.use_cuda)
+    self.dis2.cuda(self.gpu, self)
     self.enc_c.cuda(self.gpu)
     self.enc_a.cuda(self.gpu)
     self.gen.cuda(self.gpu)
     if self.isDcontent:
-      self.disContent.cuda(self.gpu)
+      self.disContent.cuda(self.gpu, self.opts.use_cuda)
     # self.dis1.cuda()
     # self.dis2.cuda()
     #self.enc_c.cuda()
@@ -300,10 +300,12 @@ class MD_multi(nn.Module):
       out_fake = nn.functional.sigmoid(out_a)
       out_real = nn.functional.sigmoid(out_b)
       # NVIDIA
-      all0 = torch.zeros_like(out_fake).cuda(self.gpu)
-      all1 = torch.ones_like(out_real).cuda(self.gpu)
-      #all0 = torch.zeros_like(out_fake).cpu()
-      #all1 = torch.ones_like(out_real).cpu()
+      if self.opts.use_cuda:
+        all0 = torch.zeros_like(out_fake).cuda(self.gpu)
+        all1 = torch.ones_like(out_real).cuda(self.gpu)
+      else:
+        all0 = torch.zeros_like(out_fake).cpu()
+        all1 = torch.ones_like(out_real).cpu()
       ad_fake_loss = nn.functional.binary_cross_entropy(out_fake, all0)
       ad_true_loss = nn.functional.binary_cross_entropy(out_real, all1)
       loss_D_gan += ad_true_loss + ad_fake_loss
@@ -345,8 +347,10 @@ class MD_multi(nn.Module):
     for out_a in pred_fake:
       outputs_fake = nn.functional.sigmoid(out_a)
       #NVIDIA
-      all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
-      #all_ones = torch.ones_like(outputs_fake).cpu()
+      if self.opts.use_cuda:
+        all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
+      else:
+        all_ones = torch.ones_like(outputs_fake).cpu()
       loss_G_GAN += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
     #loss_similarity=self.label_similarity_loss()*10
     # classification

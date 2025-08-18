@@ -35,7 +35,8 @@ def main():
   print('\n--- load model ---')
   model = MD_multi(opts,train_loader)
   # NVIDIA
-  model.setgpu(opts.gpu)
+  if opts.use_cuda:
+    model.setgpu(opts.gpu)
   if opts.resume is None:
     model.initialize()
     ep0 = -1
@@ -65,8 +66,12 @@ def main():
 
       # input data
       # NVIDIA
-      images = images.cuda(opts.gpu).detach()
-      c_org = c_org.cuda(opts.gpu).detach()
+      if opts.use_cuda:
+        images = images.cuda(opts.gpu).detach()
+        c_org = c_org.cuda(opts.gpu).detach()
+      else:
+        images = images.cpu().detach()
+        c_org = c_org.cpu().detach()
       #print("c",c_org)
       #print("i",images.size())
       #images = images.cpu().detach()

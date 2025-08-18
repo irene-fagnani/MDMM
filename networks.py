@@ -12,8 +12,9 @@ import torch.nn.functional as F
 #---------------------- For MultiDomain (MD) -----------------------
 ####################################################################
 class MD_E_content(nn.Module):
-  def __init__(self, input_dim):
+  def __init__(self, input_dim, use_cuda=True):
     super(MD_E_content, self).__init__()
+    self.use_cuda = use_cuda
     enc_c = []
     tch = 64
     enc_c += [LeakyReLUConv2d(input_dim, tch, kernel_size=7, stride=1, padding=3)]
@@ -25,7 +26,7 @@ class MD_E_content(nn.Module):
 
     for i in range(0, 1):
       enc_c += [INSResBlock(tch, tch)]
-      enc_c += [GaussianNoiseLayer()]
+      enc_c += [GaussianNoiseLayer(use_cuda=self.use_cuda)]
     self.conv = nn.Sequential(*enc_c)
 
   def forward(self, x):
@@ -432,15 +433,20 @@ class MD_Dis(nn.Module):
     return nn.Sequential(*model), tch
   
   # MODIFICHE NVIDIA
-  def cuda(self,gpu):
+  def cuda(self,gpu, use_cuda=True):
   #def cuda(self):
     # MODIFICHE NVIDIA
     # self.model.cpu()
     # self.conv1.cpu()
     # self.conv2.cpu()
-    self.model.cuda(gpu)
-    self.conv1.cuda(gpu)
-    self.conv2.cuda(gpu)
+    if use_cuda:
+      self.model.cuda(gpu)
+      self.conv1.cuda(gpu)
+      self.conv2.cuda(gpu)
+    else:
+      self.model.cpu()
+      self.conv1.cpu()
+      self.conv2.cpu()
     
 
   def forward(self, x):
@@ -657,15 +663,18 @@ class MisINSResBlock(nn.Module):
     return out
 
 class GaussianNoiseLayer(nn.Module):
-  def __init__(self,):
+  def __init__(self,use_cuda=True):
     super(GaussianNoiseLayer, self).__init__()
+    self.use_cuda = use_cuda
   def forward(self, x):
     if self.training == False:
       return x
     # MODIFICA NVIDIA
-    noise = Variable(torch.randn(x.size()).cuda(x.get_device()))
-    #device =x.get_device() if x.is_cuda else 'cpu' # commentra se si usa CUDA
-    #noise = Variable(torch.randn(x.size()).to(device)) # commentra se si usa CUDA
+    if self.use_cuda:
+      noise = Variable(torch.randn(x.size()).cuda(x.get_device()))
+    else:
+      device = x.get_device() if x.is_cuda else 'cpu' # commenta se si usa CUDA
+      noise = Variable(torch.randn(x.size()).to(device)) # commenta se si usa CUDA
     return x + noise
 
 class ReLUINSConvTranspose2d(nn.Module):
