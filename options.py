@@ -85,6 +85,7 @@ class TrainOptions():
         help='use two time scale update rule',
         default=None
     )
+    self.parser.add_argument('--plot_losses', action='store_true', help='Plot loss curves during the first epoch', default=False)
 
 
   def parse(self):

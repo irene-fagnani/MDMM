@@ -8,6 +8,7 @@ from saver import Saver
 import numpy as np
 import GMVAE
 import matplotlib.pyplot as plt
+import pandas as pd
 
 def main():
   # parse options
@@ -21,15 +22,15 @@ def main():
   #print('train_loader', len(train_loader.dataset))
   # losses dictionary
   losses_graph = {
-    "loss_D_content": [],
+    #"loss_D_content": [],
     "loss_D": [],
-    "loss_G": [],
-    "train_loss": [],
-    "train_rec": [],
-    "train_gauss": [],
-    "train_cat": [],
-    "train_acc": [],
-    "train_nmi": []
+    "loss_G": []
+    # "train_loss": [],
+    # "train_rec": [],
+    # "train_gauss": [],
+    # "train_cat": [],
+    # "train_acc": [],
+    # "train_nmi": []
   }
   # model
   print('\n--- load model ---')
@@ -108,7 +109,6 @@ def main():
         saver.write_img(-1, model)
         saver.write_model(-1, total_it, model)
         break
-      
     #print("train_loader shape: ",train_loader)
     #losses_graph["train_loss"], losses_graph["train_rec"], losses_graph["train_gauss"], losses_graph["train_cat"], losses_graph["train_acc"], losses_graph["train_nmi"] = model.train_epoch_GMVAE(optimizer, train_loader)
     if ep>=1:
@@ -116,6 +116,22 @@ def main():
     # decay learning rate
     if opts.n_ep_decay > -1:
       model.update_lr()
+    if opts.plot_losses:
+      if ep==ep0:
+        for key, value in losses_graph.items():
+            plt.figure(figsize=(10, 5))
+            plt.plot(value, label=key)
+            plt.title(f"Loss Curve: {key}")
+            plt.xlabel("Iteration")
+            plt.ylabel("Loss")
+            plt.legend()
+            plt.grid()
+            #plt.show()
+            plt.savefig(f"loss_{key}.png")
+
+    # Save values to CSV
+    df = pd.DataFrame({key: value})
+    df.to_csv(f"loss_csv_{key}.csv", index_label="Iteration")
 
     # save result image
     saver.write_img(ep, model)
@@ -123,18 +139,6 @@ def main():
     # Save network weights
     saver.write_model(ep, total_it, model)
   
-
-  # Plot each loss
-  for key, value in losses_graph.items():
-       plt.figure(figsize=(10, 5))
-       plt.plot(value, label=key)
-       plt.title(f"Loss Curve: {key}")
-       plt.xlabel("Iteration")
-       plt.ylabel("Loss")
-       plt.legend()
-       plt.grid()
-       plt.show()
-       plt.savefig(f"loss_{key}.png")
   return
 
 if __name__ == '__main__':
