@@ -129,9 +129,9 @@ def main():
             #plt.show()
             plt.savefig(f"loss_{key}.png")
 
-    # Save values to CSV
-    df = pd.DataFrame({key: value})
-    df.to_csv(f"loss_csv_{key}.csv", index_label="Iteration")
+            # Save values to CSV
+            df = pd.DataFrame({key: value})
+            df.to_csv(f"loss_csv_{key}.csv", index_label="Iteration")
 
     # save result image
     saver.write_img(ep, model)
