@@ -47,8 +47,6 @@ class TrainOptions():
         help='disable CUDA'
     )
 
-
-
     #GMVAE parameters
     self.parser.add_argument('--num_classes', type=int, default=2, help='number of classes (default: 2)')
     self.parser.add_argument('--gaussian_size', default=108, type=int, help='gaussian size (default: 64) (z_dim)')

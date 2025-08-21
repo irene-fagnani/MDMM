@@ -1,5 +1,4 @@
 import torch
-#import losses
 from options import TrainOptions
 from datasets import dataset_multi
 from model import MD_multi
@@ -19,18 +18,10 @@ def main():
   print('\n--- load dataset ---')
   dataset = dataset_multi(opts)
   train_loader = torch.utils.data.DataLoader(dataset, batch_size=opts.batch_size, shuffle=True, num_workers=opts.nThreads)
-  #print('train_loader', len(train_loader.dataset))
   # losses dictionary
   losses_graph = {
-    #"loss_D_content": [],
     "loss_D": [],
     "loss_G": []
-    # "train_loss": [],
-    # "train_rec": [],
-    # "train_gauss": [],
-    # "train_cat": [],
-    # "train_acc": [],
-    # "train_nmi": []
   }
   # model
   print('\n--- load model ---')
@@ -53,18 +44,14 @@ def main():
 
   # train
   print('\n--- train ---')
-  max_it = 25000 # 50000
+  max_it = 5000 # 50000
   model.network=GMVAE.GMVAENet(opts.x_dim, opts.gaussian_size, opts.num_classes)
   optimizer = optim.Adam(model.network.parameters(), lr=0.0001)
   model.gumbel_temp = opts.init_temp
-  #print("train_loader shape: ",train_loader)
   for ep in range(ep0, opts.n_ep):
     for it, (images, c_org) in enumerate(train_loader):
-      #print("x_dim",images.size())
       if images.size(0) != opts.batch_size:
-        #print("in if")
         continue
-
       # input data
       # NVIDIA
       if opts.use_cuda:
@@ -73,13 +60,6 @@ def main():
       else:
         images = images.cpu().detach()
         c_org = c_org.cpu().detach()
-      #print("c",c_org)
-      #print("i",images.size())
-      #images = images.cpu().detach()
-      #c_org = c_org.cpu().detach()
-      #c_trg = c_trg.cuda(opts.gpu).detach()
-      #input()
-      
       
       # update model
       if opts.isDcontent:
@@ -89,17 +69,13 @@ def main():
         else:
           model.update_D(images, c_org)
           losses_graph["loss_D"].append(model.loss_D)
-          # print("loss_D", model.loss_D)
           model.update_EG()
           losses_graph["loss_G"].append(model.loss_G)
-          #print("loss_G", model.loss_G)
       else:
         model.update_D(images, c_org)
         losses_graph["loss_D"].append(model.loss_D)
-        # print("loss_D", model.loss_D)
         model.update_EG()
         losses_graph["loss_G"].append(model.loss_G)
-        # print("loss_G", model.loss_G)
       # save to display file
       if not opts.no_display_img:
         saver.write_display(total_it, model)
@@ -109,8 +85,7 @@ def main():
         saver.write_img(-1, model)
         saver.write_model(-1, total_it, model)
         break
-    #print("train_loader shape: ",train_loader)
-    #losses_graph["train_loss"], losses_graph["train_rec"], losses_graph["train_gauss"], losses_graph["train_cat"], losses_graph["train_acc"], losses_graph["train_nmi"] = model.train_epoch_GMVAE(optimizer, train_loader)
+
     if ep>=1:
       model.gumbel_temp = np.maximum(opts.init_temp * np.exp(-opts.decay_temp_rate * ep), opts.min_temp)
     # decay learning rate
@@ -126,9 +101,7 @@ def main():
             plt.ylabel("Loss")
             plt.legend()
             plt.grid()
-            #plt.show()
             plt.savefig(f"loss_{key}.png")
-
             # Save values to CSV
             df = pd.DataFrame({key: value})
             df.to_csv(f"loss_csv_{key}.csv", index_label="Iteration")
