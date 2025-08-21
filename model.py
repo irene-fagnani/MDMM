@@ -23,7 +23,7 @@ class MD_multi(nn.Module):
       lr_enc_gen=lr
     self.ttsc=opts.two_time_scale_update_rule
     lr_dcontent = lr/2.5 
-    self.nz =108#64#8
+    self.nz =108
     self.train=data
 
     self.isDcontent = opts.isDcontent
@@ -91,23 +91,7 @@ class MD_multi(nn.Module):
     self.gen.cuda(self.gpu)
     if self.isDcontent:
       self.disContent.cuda(self.gpu, self.opts.use_cuda)
-    # self.dis1.cuda()
-    # self.dis2.cuda()
-    #self.enc_c.cuda()
-    #self.enc_a.cuda()
-    #self.gen.cuda()
-    # self.enc_c.cpu()
-    # self.enc_a.cpu()
-    # self.gen.cpu()
-    # if self.isDcontent:
-    #   self.disContent.cpu()
 
-  # def get_z_random(self, batchSize, nz, random_type='gauss'):
-  #   # NVIDIA
-  #   z = torch.randn(batchSize, nz).cuda(self.gpu) # remove 1,1
-  #   #z = torch.randn(batchSize, nz).cpu()
-  #   return z
-  
   def get_z_random(self, batchSize, nz, random_type='gauss'):
     """
     Sample latent vectors from a mixture of Gaussian distributions.
@@ -159,10 +143,8 @@ class MD_multi(nn.Module):
 
   def test_forward_transfer(self, image, image_trg, c_trg,temperature=1.0,hard=0):
     self.z_content = self.enc_c.forward(image)
-    #self.inf, self.infvar = self.enc_a.forward(image_trg, c_trg,temperature,hard)
     self.inf= self.enc_a.forward(image_trg, c_trg,temperature,hard)
     self.mu=self.inf["mean"]
-    #self.logvar=self.infvar['var'].clamp(1e-5).log()
     self.logvar=self.inf['var'].clamp(1e-5).log()
     std = self.logvar.mul(0.5).exp_()
     eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
@@ -188,13 +170,11 @@ class MD_multi(nn.Module):
 
     # get encoded z_a
     if self.concat:
-      #self.inf, infvar = self.enc_a.forward(self.real_img, self.c_org)
       self.inf= self.enc_a.forward(self.real_img, self.c_org)
       self.mu=self.inf["mean"]
       self.logvar=self.inf['var'].clamp(1e-5).log()
       std = self.logvar.mul(0.5).exp_()
       eps = self.get_z_random(std.size(0), std.size(1), 'gauss')
-      #self.z_attr = eps.mul(std).add_(self.mu)
       self.z_attr=self.inf["gaussian"]
       self.y=self.inf["categorical"]
       logits = self.inf['logits']
@@ -218,7 +198,7 @@ class MD_multi(nn.Module):
     input_c_forB = torch.cat((c_org_B, c_org_B, c_org_B), 0)
     self.infA = self.gen.forward(input_content_forA, input_attr_forA, input_y_forA, y_A)
     self.infB = self.gen.forward(input_content_forB, input_attr_forB, input_y_forB, y_B)
-    output_fakeA=self.infA['x_rec'] # ([3, 3, 216, 139968])
+    output_fakeA=self.infA['x_rec']
     output_fakeB=self.infB['x_rec']
     self.fake_A_encoded, self.fake_AA_encoded, self.fake_A_random = torch.split(output_fakeA, self.z_content_a.size(0), dim=0)
     self.fake_B_encoded, self.fake_BB_encoded, self.fake_B_random = torch.split(output_fakeB, self.z_content_a.size(0), dim=0)
@@ -235,10 +215,8 @@ class MD_multi(nn.Module):
       self.logvar_recon=self.inf_recon['var'].log()
       std_recon = self.logvar_recon.mul(0.5).exp_()
       eps_recon = self.get_z_random(std_recon.size(0), std_recon.size(1), 'gauss')
-      #self.z_attr_recon = eps_recon.mul(std_recon).add_(self.mu_recon)
       self.z_attr_recon=self.inf_recon["gaussian"]
       self.y_recon=self.inf_recon["categorical"]
-      #self.logits = self.inf_recon['logits']
     else:
       self.z_attr_recon = self.enc_a.forward(self.fake_encoded_img, self.c_org)
     self.z_attr_recon_a, self.z_attr_recon_b = torch.split(self.z_attr_recon, half_size, dim=0)
@@ -313,7 +291,6 @@ class MD_multi(nn.Module):
     loss_D_cls = self.cls_loss(pred_real_cls, self.c_org)
     loss_D = loss_D_gan + self.opts.lambda_cls * loss_D_cls 
     self.loss_D = loss_D.item()
-    #loss_D = + self.opts.lambda_cls * loss_D_cls 
     loss_D.backward()
     return loss_D_gan, loss_D_cls
 
@@ -352,7 +329,6 @@ class MD_multi(nn.Module):
       else:
         all_ones = torch.ones_like(outputs_fake).cpu()
       loss_G_GAN += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
-    #loss_similarity=self.label_similarity_loss()*10
     # classification
     loss_G_cls = self.cls_loss(pred_fake_cls, self.c_org) * self.opts.lambda_cls_G
 
@@ -366,8 +342,6 @@ class MD_multi(nn.Module):
 
     # KL loss - z_a
     if self.concat:
-      # kl_element = self.mu.pow(2).add_(self.logvar.exp()).mul_(-1).add_(1).add_(self.logvar)
-      # loss_kl_za = torch.sum(kl_element).mul_(-0.5) * 0.01
       loss=GMVAE.LossFunctions()
       half_size = self.input.size(0)//2
       mu_a, mu_b = torch.split(self.mu, half_size, 0)
@@ -375,11 +349,9 @@ class MD_multi(nn.Module):
       loss_kl_za_a = loss.gaussian_loss(self.z_attr_a, mu_a,logvar_a , self.infA["y_mean"], self.infA["y_var"])
       loss_kl_za_b = loss.gaussian_loss(self.z_attr_b, mu_b, logvar_b, self.infB["y_mean"], self.infB["y_var"])
       loss_kl_za=(loss_kl_za_a+loss_kl_za_b)
-      #loss_kl_za = torch.clamp(loss_kl_za, min=0.0, max=1e6)
       
     else:
-      loss_kl_za = self._l2_regularize(self.z_attr) # imporre postive?
-      #loss_kl_za = torch.clamp(loss_kl_za, min=0.0, max=1e6)
+      loss_kl_za = self._l2_regularize(self.z_attr) 
 
     loss_G = loss_G_GAN + loss_G_L1_self + loss_G_L1_cc + loss_kl_zc + loss_kl_za + loss_G_cls
     if self.opts.isDcontent:
@@ -407,13 +379,6 @@ class MD_multi(nn.Module):
     pred_fake, pred_fake_cls = self.dis2.forward(self.fake_random_img)
 
     loss_G_GAN2 = 0
-    #for out_a in pred_fake:
-    #   outputs_fake = nn.functional.sigmoid(out_a)
-    #   #NVIDIA
-    #   all_ones = torch.ones_like(outputs_fake).cuda(self.gpu)
-    #  all_ones = torch.ones_like(outputs_fake).cpu()
-    #  print("all ones dim: ", all_ones.size())
-    #   loss_G_GAN2 += nn.functional.binary_cross_entropy(outputs_fake, all_ones)
     
     loss_G_GAN2 = self.label_similarity_loss()
     # classification
@@ -508,153 +473,23 @@ class MD_multi(nn.Module):
   
   
   ### GMVAE LOSSES ###
-  
-  
-
-
   def label_similarity_loss(self):
-    # loss=0
-    # for pred in predicted_labels:
-    #   if true_labels.dim() == 1:
-    #       loss += F.cross_entropy(pred, true_labels)
-    #   else:
-    #       # Altrimenti, se sono one-hot
-    #       loss = -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
-    # return loss
     loss=0
     label=self.c_org
-    # Se le label vere non sono one-hot, ma indici, usa F.cross_entropy direttamente
     if label.size() != torch.Size([2, 2]):
-      print(f"Dimensione di label non valida: {label.size()}. Salto il ciclo.")
-      #true_labels = label[1]
+      print(f"Not valid label dimension: {label.size()}. Skipped.")
+
     if label.size()==torch.Size([2,2]):
       true_labels=torch.argmax(label, dim=1) 
       true_labels=true_labels.float()
-      _, predicted_labels = torch.max(self.inf_recon['categorical'], dim=1) # self.y_recon
+      _, predicted_labels = torch.max(self.inf_recon['categorical'], dim=1) 
       predicted_labels=predicted_labels.float()
-      device = predicted_labels.device  # Get the device of predicted_labels
-      true_labels = true_labels.to(device)  # Move true_labels to the same device
+      device = predicted_labels.device
+      true_labels = true_labels.to(device)
       if true_labels.dim() == 1:
             loss = F.cross_entropy(predicted_labels, true_labels, reduction="mean")
-            #loss=self.cls_loss(predicted_labels, true_labels) # usa la stessa loss utilizzata in backward_G_alone.
       else:
-            # Altrimenti, se sono one-hot
+  
             print("one hot labels")
             loss += -torch.sum(true_labels * torch.log(predicted_labels + 1e-9), dim=1).mean()
     return loss
-
-  def train_epoch_GMVAE(self, optimizer, data_loader):
-    """Train the model for one epoch
-    Args:
-        optimizer: (Optim) optimizer to use in backpropagation
-        data_loader: (DataLoader) corresponding loader containing the training data
-    Returns:
-        average of all loss values, accuracy, nmi
-    """
-    self.network.train()
-    total_loss = 0.
-    recon_loss = 0.
-    cat_loss = 0.
-    gauss_loss = 0.
-    accuracy = 0.
-    nmi = 0.
-    num_batches = 0.
-    true_labels_list = []
-    predicted_labels_list = []
-    metrics=GMVAE.Metrics()
-    
-    # iterate over the dataset
-    for (data, labels) in data_loader: # le dimensioni di questo data loader sono come quelle che abbiamo nel train??
-      if self.cuda == 1:
-        data = data.cuda()
-      optimizer.zero_grad()
-      # flatten data
-      data = data.view(data.size(0), -1)
-      # forward call
-      #out_net = self.network(data, self.gumbel_temp, self.opts.hard_gumbel) # GUARDA QUI_: network genera un out_net che ha in x_recon stringhe
-      #out_net= self.inf | self.infA
-      #out_net={key: torch.stack([self.inf.get(key), self.infA.get(key)] )for key in self.inf.keys() | self.infA.keys()}
-
-      #out_net = {key: (torch.cat((self.inf[key], self.infA[key]), dim=0) if key in self.inf and key in self.infA
-      #          else self.inf.get(key, self.infA.get(key))) for key in self.inf.keys() | self.infA.keys()}
-      
-      out_net = {
-        key: (
-        # Combine tensors if the key exists in all three dictionaries
-        torch.cat(
-            tuple(d[key] for d in [self.inf, self.infA, self.infB] if key in d), 
-            dim=0
-        )
-        if sum(key in d for d in [self.inf, self.infA, self.infB]) > 1
-        else next((d[key] for d in [self.inf, self.infA, self.infB] if key in d), None)
-        )
-        for key in self.inf.keys() | self.infA.keys() | self.infB.keys()
-        }
-
-
-      print("out_net type",out_net)  
-      print("inf",len(self.inf))
-      print("infA",len(self.infA))
-      #print("on",out_net)
-      unlab_loss_dic = self.unlabeled_loss(data, out_net)
-      total = unlab_loss_dic['total']
-      # accumulate values
-      total_loss += total.item()
-      recon_loss += unlab_loss_dic['reconstruction'].item()
-      gauss_loss += unlab_loss_dic['gaussian'].item()
-      cat_loss += unlab_loss_dic['categorical'].item()
-      # perform backpropagation
-      total.backward()
-      optimizer.step()
-      # save predicted and true labels
-      predicted = unlab_loss_dic['predicted_labels'] # torch.Size([2])
-      #decoded_labels = torch.argmax(labels, dim=1)  # Decode one-hot labels
-      true_labels_list.append(labels[1])
-      predicted_labels_list.append(predicted)
-      num_batches += 1.
-    # average per batch
-    total_loss /= num_batches
-    recon_loss /= num_batches
-    gauss_loss /= num_batches
-    cat_loss /= num_batches
-    # concat all true and predicted labels
-    true_labels = torch.cat(true_labels_list, dim=0).cpu().numpy()
-    predicted_labels = torch.cat(predicted_labels_list, dim=0).cpu().numpy()
-    # compute metrics
-    accuracy = 100.0 * metrics.cluster_acc(predicted_labels, true_labels)
-    nmi = 100.0 * metrics.nmi(predicted_labels, true_labels)
-    return total_loss, recon_loss, gauss_loss, cat_loss, accuracy, nmi
-  
-  
-  def unlabeled_loss(self, data, out_net):
-    """Method defining the loss functions derived from the variational lower bound
-    Args:
-        data: (array) corresponding array containing the input data
-        out_net: (dict) contains the graph operations or nodes of the network output. Output del GMVAENet
-    Returns:
-        loss_dic: (dict) contains the values of each loss function and predictions
-    """
-    # obtain network variables
-    loss_functions = GMVAE.LossFunctions()
-    z, data_recon = out_net['gaussian'], out_net['x_rec']
-    logits, prob_cat = out_net['logits'], out_net['prob_cat']
-    y_mu, y_var = out_net['y_mean'], out_net['y_var']
-    mu, var = out_net['mean'], out_net['var']
-    # reconstruction loss
-    print("data shape",len(data))
-    print("data_recon shape",len(data_recon))
-    loss_rec = loss_functions.reconstruction_loss(data, data_recon) 
-    # gaussian loss
-    loss_gauss = loss_functions.gaussian_loss(z, mu, var, y_mu, y_var)
-    # categorical loss
-    loss_cat = -loss_functions.entropy(logits, prob_cat) - np.log(0.1)
-    # total loss
-    loss_total = self.opts.w_rec * loss_rec + self.opts.w_gauss * loss_gauss + self.opts.w_categ * loss_cat
-    # obtain predictions
-    _, predicted_labels = torch.max(logits, dim=1) # torch.Size([2])
-    loss_dic = {'total': loss_total,
-                'predicted_labels': predicted_labels,
-                'reconstruction': loss_rec,
-                'gaussian': loss_gauss,
-                'categorical': loss_cat}
-    return loss_dic
