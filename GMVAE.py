@@ -91,9 +91,8 @@ class Gaussian(nn.Module):
 class InferenceNet(nn.Module):
   def __init__(self, x_dim, z_dim, y_dim):
     super(InferenceNet, self).__init__()
-    # ci sono due reti neurali: una per q(y|x) e una per q(z|y,x)
+
     # q(y|x)
-    #print("x_dim", x_dim, y_dim,z_dim)
     self.inference_qyx = torch.nn.ModuleList([
         nn.Linear(x_dim, 512),
         nn.ReLU(),
@@ -113,34 +112,23 @@ class InferenceNet(nn.Module):
 
   # q(y|x)
   def qyx(self, x, temperature, hard):
-    #print("Entra in qyx")
     num_layers = len(self.inference_qyx)
     for i, layer in enumerate(self.inference_qyx):
       if i == num_layers - 1:
-        #print("entra in if")
-        #last layer is gumbel softmax
         x = layer(x, temperature, hard)
       else:
-        #print("entra in else")
-        # print("x:", x)
-        # print("x dimension", x.shape)
-        #print("layer:", layer)
-        x=layer(x) # dimension of x: torch.Size([1, 746496])
-                    # layer is a torch linear object
-    #print("Esce da qyx")
+        x=layer(x) 
     return x
-  # funzione per calcolare q(y|x)
+
 
   # q(z|x,y)
   def qzxy(self, x, y):
-    concat = torch.cat((x, y), dim=1) # combina l'input di x e y
+    concat = torch.cat((x, y), dim=1) 
     for layer in self.inference_qzyx:
       concat = layer(concat)
     return concat
 
   def forward(self, x, temperature=1.0, hard=0):
-    #x = Flatten(x)
-    #print("Entra in forward infNet")
     # q(y|x)
     logits, prob, y = self.qyx(x, temperature, hard)
 
@@ -149,37 +137,30 @@ class InferenceNet(nn.Module):
 
     output = {'mean': mu, 'var': var, 'gaussian': z,
               'logits': logits, 'prob_cat': prob, 'categorical': y}
-    #print("Esce da forward infNet")
     return output
-# in input prende un immagine x
-# la rete usa il metodo qyx  inferire la variabile latente discreta y data l'immagine di input x. Questo viene fatto approssimando la distribuzione categoriale con Gumbel-Softmax.
-# La rete usa il metodo qzxy per inferire la variabile latente continua z data l'immagine x e la variabile latente discreta y.
-# in output restituisce la media mu, la varianza var e il campione z della variabile latente continua z, i logit, la probabilità e il campione y della variabile latente discreta y.
-
 # Generative Network
 class GenerativeNet(nn.Module):
   def __init__(self, x_dim, z_dim, y_dim):
     super(GenerativeNet, self).__init__()
 
     # p(z|y)
-    self.y_mu = nn.Linear(y_dim, z_dim)#y_dim, z_dim
-    self.y_var = nn.Linear(y_dim, z_dim)#
+    self.y_mu = nn.Linear(y_dim, z_dim)
+    self.y_var = nn.Linear(y_dim, z_dim)
 
-    # p(x|z) genera x dato z
+    # p(x|z)
     self.generative_pxz = torch.nn.ModuleList([
         nn.Linear(z_dim, 512),
         nn.ReLU(),
         nn.Linear(512, 512),
         nn.ReLU(),
         nn.Linear(512, x_dim),
-        torch.nn.Sigmoid() # garantisce che l'output sia compreso tra 0 e 1
+        torch.nn.Sigmoid()
     ])
 
   # p(z|y)
   def pzy(self, y):
-    #print("y",y.size())
     y_mu = self.y_mu(y)
-    y_var = F.softplus(self.y_var(y)) # garantisce che la varianza sia sempre positiva
+    y_var = F.softplus(self.y_var(y)) 
     return y_mu, y_var
 
   # p(x|z)
@@ -197,13 +178,6 @@ class GenerativeNet(nn.Module):
 
     output = {'y_mean': y_mu, 'y_var': y_var, 'x_rec': x_rec}
     return output
-  
-  # in input la classe prende una variabile latente z e una variabile categorica y
-  # la rete usa il metodo pzy per calcolare la media e la varianza della distribuzione gaussiana di z data y
-  # e il metodo pxz per generare l'immagine x dato il campione z
-  # in output la rete restituisce la media e la varianza delle variabili latenti y e l'immagine generata x
-  
-  ### LOSSES ###
   
 class LossFunctions:
   eps = 1e-8
@@ -237,14 +211,7 @@ class LossFunctions:
           output: (array/float) depending on average parameters the result will be the mean
                                 of all the sample losses or an array with the losses per sample
       """
-      # print(f"Type of 'real': {type(real)}")
-      # print(f"Type of 'predicted': {type(predicted)}")
-      # print("valore predicted",predicted)
-      #print("real",real.size())
       predicted_flatten=predicted.view( 2,-1)
-      #print("predicted_flatten",predicted_flatten.size())
-      #print("predicted_flatten device:", predicted_flatten.device)
-      #print("real device:", real.device)
       predicted_flatten = predicted_flatten.to(real.device)
       if rec_type == 'mse':
         loss = (real - predicted_flatten).pow(2)
@@ -290,16 +257,10 @@ class LossFunctions:
          output: (array/float) depending on average parameters the result will be the mean
                                 of all the sample losses or an array with the losses per sample
       """
-      # print("z",z)
-      # print("z_mu",z_mu)
-      # print("z_var",z_var)
-      # print("z_mu_prior",z_mu_prior)
-      # print("z_var_prior",z_var_prior)
       z_var = F.softplus(z_var)
       z_var_prior = F.softplus(z_var_prior)
       loss = self.log_normal(z, z_mu, z_var) - self.log_normal(z, z_mu_prior, z_var_prior)
       loss = torch.where(torch.isfinite(loss), loss, torch.zeros_like(loss))
-      #print("gaussian loss",loss.mean())
       return loss.mean()
 
 
@@ -321,13 +282,8 @@ class LossFunctions:
   
 
 class Metrics:
-
-  # Code taken from the work
-  # VaDE (Variational Deep Embedding:A Generative Approach to Clustering)
   def cluster_acc(self, Y_pred, Y):
     Y_pred, Y = np.array(Y_pred), np.array(Y)
-    #print("Y_pred dimension",Y_pred.size)
-    #print("Y dimension",Y.size)
     assert Y_pred.size == Y.size
     D = max(Y_pred.max(), Y.max())+1
     w = np.zeros((D,D), dtype=np.int64)
