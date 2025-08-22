@@ -32,6 +32,7 @@ class TrainOptions():
     self.parser.add_argument('--dis_spectral_norm', action='store_true', help='use spectral normalization in discriminator')
     self.parser.add_argument('--lr_policy', type=str, default='lambda', help='type of learn rate decay')
     self.parser.add_argument('--n_ep', type=int, default=1200, help='number of epochs') # 400 * d_iter
+    self.parser.add_argument('--max_it', type=int, default=50000, help='number of max iterations') # 400 * d_iter
     self.parser.add_argument('--n_ep_decay', type=int, default=600, help='epoch start decay learning rate, set -1 if no decay') # 200 * d_iter
     self.parser.add_argument('--resume', type=str, default=None, help='specified the dir of saved models for resume the training')
     self.parser.add_argument('--d_iter', type=int, default=3, help='# of iterations for updating content discriminator')

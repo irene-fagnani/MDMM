@@ -101,6 +101,41 @@ Below is a list of the available command-line arguments added by us and their us
 - `--plot_losses` *(flag)*  
   Plots the loss curves during the first epoch. 
 
+## Training Script: `run_train.sh`
+
+A convenient shell script is provided to run training with dataset-specific defaults and optional flags for experimental control.
+
+### Usage
+
+```bash
+./run_train.sh DATASET_NAME [MAX_IT] [--use_cpu] [--use_adain] [--double_layer] [--two_time_scale_rule RULE]
+```
+
+### Examples
+
+```bash
+# Train summer2winter_yosemite with 5000 iterations on GPU
+./run_train.sh summer2winter_yosemite 5000
+
+# Train summer2winter_yosemite with 5000 iterations on CPU
+./run_train.sh summer2winter_yosemite 5000 --use_cpu
+
+# Train mini with 10000 iterations, AdaIN, double conv layers, and two-time scale update
+./run_train.sh mini 10000 --use_adain --double_layer double_gen_enc
+
+# Train orange2apple with default settings
+./run_train.sh orange2apple
+```
+
+Before running, make sure the script is executable:
+
+```bash
+chmod +x run_train.sh
+```
+
+
+
+
 ## Note
 - The feature transformation (i.e. concat 0) is not fully tested.
 - The hyper-parameters matter and are task-dependent. They are not carefully selected yet.
