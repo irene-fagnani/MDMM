@@ -1,17 +1,34 @@
-# Harmonization Project.
+# Deconstructing Images: A Generative Approach.
 
-Pytorch implementation of multi-modality I2I translation for multi-domains. The project is an extension to the "Diverse Image-to-Image Translation via Disentangled Representations(https://arxiv.org/abs/1808.00948)", ECCV 2018, with the integration of GMVAE. 
+Pytorch implementation of multi-modality I2I translation for multi-domains. The project is an extension to the "Diverse Image-to-Image Translation via Disentangled Representations(https://arxiv.org/abs/1808.00948)", ECCV 2018, with the integration of a Gaussian Mixture Variational Autoencoder (https://doi.org/10.48550/arXiv.1611.02648). 
 With the disentangled representation framework, we can learn diverse image-to-image translation among multiple domains.
 [[DRIT]](https://github.com/HsinYingLee/DRIT)
 
-Contact: Hsin-Ying Lee (hlee246@ucmerced.edu) and Hung-Yu Tseng (htseng6@ucmerced.edu)
+
+This project explores integrating a *Gaussian Mixture Variational Autoencoder (GMVAE)* into an image-to-image (I2I) translation framework. Our goal is to overcome the limitations of standard VAEs that assume a uni-modal latent space, which restricts a model's ability to capture the full diversity of target domain images.
+
+### The Problem
+
+Existing I2I translation models, such as DRIT++, often rely on standard VAEs that use a single Gaussian distribution in their latent space. This assumption is a limitation when data is inherently multi-modal, as it restricts the model's ability to represent complex variations. This can lead to a lack of diversity and expressiveness in translated images.
+
+### Our Solution
+
+We propose a novel approach that replaces the standard VAE with a GMVAE. By modeling the latent space with a *mixture of Gaussian distributions*, our framework provides a more flexible and structured representation. This allows the model to better capture and learn the rich, multi-modal variations within the target domain.
+
+### Project Objectives
+
+The primary objective of this work is to investigate whether using a GMVAE can lead to measurable improvements in I2I translation tasks. Specifically, we evaluate how this modification influences the quality and variability of translated images, and whether it effectively addresses the limitations of prior work.
+
 
 ### Prerequisites
-- Python 3.5 or Python 3.6
-- Pytorch 0.4.0 and torchvision (https://pytorch.org/)
-- [TensorboardX](https://github.com/lanpa/tensorboard-pytorch)
-- [Tensorflow](https://www.tensorflow.org/) (for tensorboard usage)
-- Docker file based on CUDA 9.0, CuDNN 7.1, and Ubuntu 16.04 is provided in the [[DRIT]](https://github.com/HsinYingLee/DRIT) github page.
+
+The prerequisites are stored in the file "requirements.txt". To install them: 
+
+```
+pip install -r requirements.txt
+
+```
+
 
 ## Usage
 - Training
@@ -182,5 +199,7 @@ European Conference on Computer Vision (ECCV), 2018 (**oral**).
 
 
 [“Deep Unsupervised Clustering with Gaussian Mixture Variational Autoencoders.”](https://doi.org/10.48550/arXiv.1611.02648)<br> Dilokthanakul, Nat, Pedro A. M. Mediano, Marta Garnelo, M. J. Lee, Hugh Salimbeni, Kai Arulkumaran and Murray Shanahan.<br> ArXiv abs/1611.02648 (2016).
+
+"Deconstructing Images: A Generative Approach."<br> Irene Fagnani, Greta Gorbani (2025).
 
 
