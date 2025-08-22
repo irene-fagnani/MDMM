@@ -127,6 +127,39 @@ A convenient shell script is provided to run training with dataset-specific defa
 ./run_train.sh orange2apple
 ```
 
+### Experiments related to our work:
+
+#### Loss integration (ch. 6.2)
+```bash
+./run_train.sh apple2orange 5000
+```
+
+#### Addressing the Discriminator-Generator Imbalance, AdaIN (ch. 6.3)
+
+```bash
+./run_train.sh apple2orange 4500 --use_adain
+```
+
+#### Addressing the Discriminator-Generator Imbalance, Transposed Convolutional Layer (ch. 6.3)
+
+```bash
+./run_train.sh apple2orange 4000 --double_layer
+```
+
+#### Addressing the Discriminator-Generator Imbalance, Halving the Discriminator’s Learning Rate (ch. 6.3)
+
+```bash
+./run_train.sh apple2orange 5500 --two_time_scale_update_rule half_discr
+```
+
+#### Addressing the Discriminator-Generator Imbalance, Doubling the Generator’s Learning Rate (ch. 6.3)
+
+```bash
+./run_train.sh apple2orange 5500 --two_time_scale_update_rule double_gen_enc
+```
+
+
+
 Before running, make sure the script is executable:
 
 ```bash
