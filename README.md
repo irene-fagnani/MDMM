@@ -183,9 +183,21 @@ Before running, make sure the script is executable:
 chmod +x run_train.sh
 ```
 
-## Test folder
+## Test Folder
 
+The `test` folder contains three scripts designed to validate the implementation and functionality of our contributions within the existing framework.
 
+Specifically:
+
+- **`kl_loss_test`**: evaluates the effectiveness of the Gaussian loss in modeling multimodal distributions.  
+- **`consistency_test`**: ensures that the encoder and decoder operate coherently.  
+- **`integration_test`**: runs the full pipeline on a smaller scale (fewer epochs and iterations) using a toy dataset, allowing us to observe how different components interact.
+
+To run all three tests at once, use the provided `run_tests.sh` script. First, ensure it is executable:
+
+```bash
+chmod +x run_tests.sh
+```
 
 
 ## Note
