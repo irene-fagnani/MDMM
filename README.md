@@ -1,4 +1,4 @@
-# Deconstructing Images: A Generative Approach.
+# Diverse Image Translation through Disentangled Gaussian Mixture Latent Spaces.
 
 Pytorch implementation of multi-modality I2I translation for multi-domains. The project is an extension to the "Diverse Image-to-Image Translation via Disentangled Representations(https://arxiv.org/abs/1808.00948)", ECCV 2018, with the integration of a Gaussian Mixture Variational Autoencoder (https://doi.org/10.48550/arXiv.1611.02648). 
 With the disentangled representation framework, we can learn diverse image-to-image translation among multiple domains.
