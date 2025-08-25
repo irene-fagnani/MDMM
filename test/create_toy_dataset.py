@@ -2,7 +2,7 @@ import os
 from PIL import Image
 import numpy as np
 
-def create_toy_dataset(base_dir="datasets/toy_dataset", n_train=5, n_test=2):
+def create_toy_dataset(base_dir="datasets/toy_dataset", n_train=20, n_test=10):
     subfolders = ["trainA", "trainB", "testA", "testB"]
     for sub in subfolders:
         folder = os.path.join(base_dir, sub)

@@ -11,6 +11,7 @@ from datasets import dataset_multi  # dataset_multi is a class/function inside s
 from model import MD_multi
 import GMVAE
 import torch
+from torch import nn, optim
 from saver import Saver
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,23 +26,24 @@ def integration_test():
         # already provided ones
         batch_size = 2
         nThreads = 0
-        use_cuda = False
+        use_cpu =False
+        use_cuda=True
         gpu = 0
         resume = None
-        max_it = 5
-        n_ep = 1
+        max_it = 10
+        n_ep = 10
         init_temp = 1.0
         decay_temp_rate = 0.01
         min_temp = 0.5
         x_dim = 139968
-        gaussian_size = 216
+        gaussian_size = 108
         num_classes = 2
         isDcontent = False
         d_iter = 1
         n_ep_decay = -1
         no_display_img = True
-        plot_losses = False
-        dataroot = "datasets/toy_dataset"
+        plot_losses = True
+        dataroot = "../test/datasets/toy_dataset"
         num_domains = 2
         input_dim = 3
         phase = "train"
@@ -51,7 +53,7 @@ def integration_test():
 
 
         # added ones from your options.py
-        name = "trial"
+        name = "integration_test"
         display_dir = "./logs"
         result_dir = "./results"
         display_freq = 10
@@ -112,75 +114,75 @@ def integration_test():
     # saver for display and output
     saver = Saver(opts)
 
-    # train
+  # train
     print('\n--- train ---')
     max_it = opts.max_it # 50000
     model.network=GMVAE.GMVAENet(opts.x_dim, opts.gaussian_size, opts.num_classes)
-    #optimizer = optim.Adam(model.network.parameters(), lr=0.0001)
+    optimizer = optim.Adam(model.network.parameters(), lr=0.0001)
     model.gumbel_temp = opts.init_temp
     for ep in range(ep0, opts.n_ep):
-        for it, (images, c_org) in enumerate(train_loader):
-            if images.size(0) != opts.batch_size:
-                continue
+      for it, (images, c_org) in enumerate(train_loader):
+        if images.size(0) != opts.batch_size:
+          continue
         # input data
         # NVIDIA
-            if opts.use_cuda:
-                images = images.cuda(opts.gpu).detach()
-                c_org = c_org.cuda(opts.gpu).detach()
-            else:
-                images = images.cpu().detach()
-                c_org = c_org.cpu().detach()
+        if opts.use_cuda:
+          images = images.cuda(opts.gpu).detach()
+          c_org = c_org.cuda(opts.gpu).detach()
+        else:
+          images = images.cpu().detach()
+          c_org = c_org.cpu().detach()
         
         # update model
         if opts.isDcontent:
-            if (it + 1) % opts.d_iter != 0 and it < len(train_loader) - 2:
-                model.update_D_content(images, c_org)
-                continue
-            else:
-                model.update_D(images, c_org)
-                losses_graph["loss_D"].append(model.loss_D)
-                model.update_EG()
-                losses_graph["loss_G"].append(model.loss_G)
-        else:
+          if (it + 1) % opts.d_iter != 0 and it < len(train_loader) - 2:
+            model.update_D_content(images, c_org)
+            continue
+          else:
             model.update_D(images, c_org)
-            losses_graph["loss_D"].append(model.loss_D)
             model.update_EG()
-            losses_graph["loss_G"].append(model.loss_G)
+        else:
+          model.update_D(images, c_org)
+          model.update_EG()
+
         # save to display file
         if not opts.no_display_img:
-            saver.write_display(total_it, model)
+          saver.write_display(total_it, model)
         print('total_it: %d (ep %d, it %d), lr %08f' % (total_it, ep, it, model.gen_opt.param_groups[0]['lr']))
+        losses_graph["loss_D"].append(model.loss_D)
+        losses_graph["loss_G"].append(model.loss_G)
         total_it += 1
+
         if total_it >= max_it:
-            saver.write_img(-1, model)
-            saver.write_model(-1, total_it, model)
-            break
+          saver.write_img(-1, model)
+          saver.write_model(-1, total_it, model)
+          break
 
-        if ep>=1:
-            model.gumbel_temp = np.maximum(opts.init_temp * np.exp(-opts.decay_temp_rate * ep), opts.min_temp)
-        # decay learning rate
-        if opts.n_ep_decay > -1:
-            model.update_lr()
-        if opts.plot_losses:
-            if ep==ep0:
-                for key, value in losses_graph.items():
-                    plt.figure(figsize=(10, 5))
-                    plt.plot(value, label=key)
-                    plt.title(f"Loss Curve: {key}")
-                    plt.xlabel("Iteration")
-                    plt.ylabel("Loss")
-                    plt.legend()
-                    plt.grid()
-                    plt.savefig(f"loss_{key}.png")
-                    # Save values to CSV
-                    df = pd.DataFrame({key: value})
-                    df.to_csv(f"loss_csv_{key}.csv", index_label="Iteration")
+      if ep>=1:
+        model.gumbel_temp = np.maximum(opts.init_temp * np.exp(-opts.decay_temp_rate * ep), opts.min_temp)
+      # decay learning rate
+      if opts.n_ep_decay > -1:
+        model.update_lr()
+      if opts.plot_losses:
+        #if ep==ep0:
+          for key, value in losses_graph.items():
+              plt.figure(figsize=(10, 5))
+              plt.plot(value, label=key)
+              plt.title(f"Loss Curve: {key}")
+              plt.xlabel("Iteration")
+              plt.ylabel("Loss")
+              plt.legend()
+              plt.grid()
+              plt.savefig(f"loss_{key}_integration_test.png")
+              # Save values to CSV
+              df = pd.DataFrame({key: value})
+              df.to_csv(f"loss_csv_{key}_integration_test.csv", index_label="Iteration")
 
-        # save result image
-        saver.write_img(ep, model)
+      # save result image
+      saver.write_img(ep, model)
 
-        # Save network weights
-        saver.write_model(ep, total_it, model)
+      # Save network weights
+      saver.write_model(ep, total_it, model)
     
     return
 
