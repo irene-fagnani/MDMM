@@ -22,10 +22,10 @@ The primary objective of this work is to investigate whether using a GMVAE can l
 
 ### Prerequisites
 
-The prerequisites are stored in the file "requirements.txt". To install them: 
+The prerequisites are stored in the file "requirements.txt", under the folder "docs". To install them: 
 
 ```
-pip install -r requirements.txt
+pip install -r docs/requirements.txt
 
 ```
 
