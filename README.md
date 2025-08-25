@@ -183,6 +183,8 @@ Before running, make sure the script is executable:
 chmod +x run_train.sh
 ```
 
+## Test folder
+
 
 
 
