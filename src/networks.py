@@ -155,8 +155,8 @@ class MD_G_uni(nn.Module):
     return self.dec(x_c)
 
 class AdaIN(nn.Module):
-    def _init_(self, in_channels, style_dim):
-        super(AdaIN, self)._init_()
+    def __init__(self, in_channels, style_dim):
+        super(AdaIN, self).__init__()
         self.style_fc = nn.Sequential(
             nn.Linear(style_dim, in_channels), 
             nn.ReLU(),
@@ -181,8 +181,9 @@ class MD_G_multi_concat(nn.Module):
     self.double_ConvT = double_ConvT
     if self.use_adain:
       self.style_dim = 2
+      #tch = 256 + self.nz + self.c_dim
+      tch=256
       self.adain1 = AdaIN(tch, self.style_dim)
-      tch = 256 + self.nz + self.c_dim
     else:
       tch = 256
     dec_share = []
