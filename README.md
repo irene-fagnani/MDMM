@@ -214,6 +214,6 @@ European Conference on Computer Vision (ECCV), 2018 (**oral**).
 
 [“Deep Unsupervised Clustering with Gaussian Mixture Variational Autoencoders.”](https://doi.org/10.48550/arXiv.1611.02648)<br> Dilokthanakul, Nat, Pedro A. M. Mediano, Marta Garnelo, M. J. Lee, Hugh Salimbeni, Kai Arulkumaran and Murray Shanahan.<br> ArXiv abs/1611.02648 (2016).
 
-["Diverse Image Translation through Disentangled Gaussian Mixture Latent Spaces"](docs/Diverse_Image_Translation_through_Disentangled_Gaussian_Mixture_Latent_Spaces_report.pdf)<br> Irene Fagnani, Greta Gorbani (2025).
+["Diverse Image Translation through Disentangled Gaussian Mixture Latent Spaces"](docs/Diverse_Image_Translation_through_Disentangled_Gaussian_report.pdf)<br> Irene Fagnani, Greta Gorbani (2025).
 
 
